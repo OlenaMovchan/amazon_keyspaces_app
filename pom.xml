@@ -243,9 +243,9 @@
         <resources>
           <resource>
             <directory>src/main/resources</directory>
-            <includes>
-              <include>config.properties</include>
-            </includes>
+<!--            <includes>-->
+<!--              <include>config.properties</include>-->
+<!--            </includes>-->
           </resource>
         </resources>
         <plugins>
