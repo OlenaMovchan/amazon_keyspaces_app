@@ -178,6 +178,9 @@
       <artifactId>java-driver-mapper-runtime</artifactId>
       <version>4.17.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.datastax.oss/java-driver-mapper-processor -->
+
+
     <!--      <dependency>-->
     <!--          <groupId>org.testcontainers</groupId>-->
     <!--          <artifactId>cassandra</artifactId>-->
@@ -224,6 +227,7 @@
             <path>
               <groupId>com.datastax.oss</groupId>
               <artifactId>java-driver-mapper-processor</artifactId>
+              <version>4.17.0</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
