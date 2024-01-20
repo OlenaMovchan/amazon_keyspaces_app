@@ -27,7 +27,7 @@ public class AmazonKeyspacesApp {
     }
     public static void run(){
         System.out.println("Start programm");
-        System.out.println("20-01-17-42");
+        System.out.println("20-01-19-56");
         //try (CqlSession session = CqlSession.builder()
         Connector connector = new Connector();
         connector.connect(contactPoint, port);
