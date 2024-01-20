@@ -64,8 +64,8 @@ public class Repository {
         int totalStores = 75;
         int totalCategories = 1000;
         Random random = new Random();
-        String[] store_address = new String[5];
-        String[] categories = new String[20];
+        String[] store_address = new String[75];
+        String[] categories = new String[1000];
         Faker faker = new Faker(new Locale("uk"));
         for (int i = 0; i < 75; i++) {
             store_address[i] = String.valueOf(faker.address().fullAddress());
