@@ -128,9 +128,6 @@ public class Repository {
                 .setInt("quantity", quantity);
         session.execute(statement.setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
 
-
-
-        // Update total_products_by_store table
         String updateTotalQuery = String.format(
                 "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_name = ? AND store_address = ?",
                 KEYSPACE_NAME, TABLE_NAME2);
