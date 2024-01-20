@@ -61,16 +61,16 @@ public class Repository {
     //+ "WITH CLUSTERING ORDER BY (total_quantity DESC)",
     public static void insertData(CqlSession session) {
         int totalProducts = 40000;
-        int totalStores = 5;
-        int totalCategories = 20;
+        int totalStores = 75;
+        int totalCategories = 1000;
         Random random = new Random();
         String[] store_address = new String[5];
         String[] categories = new String[20];
         Faker faker = new Faker(new Locale("uk"));
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 75; i++) {
             store_address[i] = String.valueOf(faker.address().fullAddress());
         }
-        for (int i = 0; i <20; i++) {
+        for (int i = 0; i <1000; i++) {
             categories[i] = String.valueOf(faker.commerce().department());
         }
         cat = categories[10];
@@ -87,7 +87,7 @@ public class Repository {
 
             for (int k = 1; k <= totalStores; k++) {
                 //Adjust the logic for quantity as needed
-                for (int l = 1; l <= 10; l++) {
+                for (int l = 1; l <= 40000; l++) {
                     System.out.println(faker.commerce().department());
                     System.out.println(faker.address().fullAddress());
                     UUID productId = UUID.randomUUID();
