@@ -26,6 +26,7 @@ public class AmazonKeyspacesApp {
 
     }
     public static void run(){
+        System.out.println("Start programm");
         //try (CqlSession session = CqlSession.builder()
         Connector connector = new Connector();
         connector.connect(contactPoint, port);
