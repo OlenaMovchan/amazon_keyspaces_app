@@ -57,7 +57,7 @@ public class AmazonKeyspacesApp {
 
         stopWatch.reset();
         stopWatch.start();
-        //selectData(session);
+        selectData(session);
         stopWatch.stop();
         LOGGER.info("Query time: " + stopWatch.getTime() + " ms");
 
