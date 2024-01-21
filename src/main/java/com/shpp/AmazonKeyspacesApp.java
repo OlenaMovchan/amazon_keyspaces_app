@@ -16,10 +16,10 @@ public class AmazonKeyspacesApp {
     static String contactPoint = "cassandra.eu-central-1.amazonaws.com";
     static String username = "cassandra-at-271420611782";
     static String password = "+YI+MZcwHbAUo1AKOe4gUy1cY4A8dDPXsMrK/V1hQUs=";
-    private static int port = 9142;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonKeyspacesApp.class);
-    private static final String KEYSPACE_NAME = "my_keyspace";
-    private static final String TABLE_NAME = "store_product_table";
+    public static int port = 9142;
+    public static final Logger LOGGER = LoggerFactory.getLogger(AmazonKeyspacesApp.class);
+    public static final String KEYSPACE_NAME = "my_keyspace";
+    public static final String TABLE_NAME = "store_product_table";
 
     public static void main(String[] args) {
         new AmazonKeyspacesApp().run();
@@ -68,9 +68,9 @@ public class AmazonKeyspacesApp {
 //            LOGGER.error("Error ", e.getMessage());
 //        }
     }
-    private static void waitForTableCreation(CqlSession session, String tableName) {
+    public static void waitForTableCreation(CqlSession session, String tableName) {
         long startTime = System.currentTimeMillis();
-        long timeoutMillis = TimeUnit.MINUTES.toMillis(5); // Set your desired timeout
+        long timeoutMillis = TimeUnit.MINUTES.toMillis(5);
 
         while (System.currentTimeMillis() - startTime < timeoutMillis) {
             if (isTableCreated(session, tableName)) {
@@ -79,7 +79,7 @@ public class AmazonKeyspacesApp {
             }
 
             try {
-                TimeUnit.SECONDS.sleep(5); // Check every 5 seconds
+                TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("Interrupted while waiting for table creation", e);
@@ -89,7 +89,7 @@ public class AmazonKeyspacesApp {
         throw new RuntimeException("Timeout waiting for table creation");
     }
 
-    private static boolean isTableCreated(CqlSession session, String tableName) {
+    public static boolean isTableCreated(CqlSession session, String tableName) {
         String query = String.format(
                 "SELECT table_name FROM system_schema.tables WHERE keyspace_name = '%s' AND table_name = '%s';",
                 KEYSPACE_NAME, tableName);
