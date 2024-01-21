@@ -3,9 +3,7 @@ package com.shpp;
 import com.datastax.driver.core.utils.UUIDs;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
-import com.datastax.oss.driver.api.core.cql.BoundStatement;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.cql.*;
 import com.github.javafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +18,7 @@ public class Repository {
     private static final String KEYSPACE_NAME = "my_keyspace";
     private static final String TABLE_NAME = "store_product_table";
     private static final String TABLE_NAME2 = "total_products_by_store";
-    //CREATE TABLE IF NOT EXISTS keyspace_name.store_product_table (
-//    category_name TEXT,
-//    store_address TEXT,
-//    product_id UUID,
-//    quantity INT,
-//    PRIMARY KEY ((category_name, store_address), product_id)
-//);
-//
-//CREATE TABLE IF NOT EXISTS keyspace_name.total_products_by_store (
-//    category_name TEXT,
-//    store_address TEXT,
-//    total_quantity INT,
-//    PRIMARY KEY (category_name, store_address)
-//);
+
     static void createTable(CqlSession session) {
         String createTableQuery = String.format(
                 "CREATE TABLE IF NOT EXISTS %s.%s ("
@@ -42,7 +27,6 @@ public class Repository {
                         + "product_id UUID, "
                         + "quantity INT, "
                         + "PRIMARY KEY ((category_name), store_address, product_id))",
-                //+ "WITH CLUSTERING ORDER BY (quantity DESC)",
                 KEYSPACE_NAME, TABLE_NAME);
         session.execute(createTableQuery);
 
@@ -58,7 +42,50 @@ public class Repository {
         LOGGER.info("Table created successfully");
     }
     static String cat = "";
-    //+ "WITH CLUSTERING ORDER BY (total_quantity DESC)",
+
+    //    public static void insertData(CqlSession session) {
+    //        // ... (existing code)
+    //
+    //        String insertDataQuery = String.format(
+    //                "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
+    //                KEYSPACE_NAME, TABLE_NAME);
+    //
+    //        BatchStatementBuilder batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+    //
+    //        for (int j = 1; j <= totalCategories; j++) {
+    //            // ... (existing code)
+    //
+    //            for (int k = 1; k <= totalStores; k++) {
+    //                for (int l = 1; l <= 40000; l++) {
+    //                    // ... (existing code)
+    //
+    //                    // Batch insert
+    //                    batchBuilder.addStatement(session.prepare(insertDataQuery).bind()
+    //                            .setString("category_name", category_name)
+    //                            .setString("store_address", store_address)
+    //                            .setUuid("product_id", productId)
+    //                            .setInt("quantity", quantity));
+    //                }
+    //            }
+    //        }
+    //
+    //        // Execute batch
+    //        session.execute(batchBuilder.build());
+    //        LOGGER.info("Data inserted successfully");
+    //    }
+    //
+    //    static void validateAndInsertData(CqlSession session, String category_name, String store_address, UUID productId, int quantity, int total_quantity) {
+    //        // ... (existing code)
+    //
+    //        // Batch update
+    //        String updateTotalQuery = String.format(
+    //                "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_name = ? AND store_address = ?",
+    //                KEYSPACE_NAME, TABLE_NAME2);
+    //        batchBuilder.addStatement(session.prepare(updateTotalQuery).bind()
+    //                .setLong("total_quantity", quantity)
+    //                .setString("category_name", category_name)
+    //                .setString("store_address", store_address));
+    //    }
     public static void insertData(CqlSession session) {
         int totalProducts = 40000;
         int totalStores = 75;
@@ -77,36 +104,32 @@ public class Repository {
         String insertDataQuery = String.format(
                 "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
                 KEYSPACE_NAME, TABLE_NAME);
-//        BoundStatement boundStatement = session.prepare(insertDataQuery).bind()
-//                .setUuid("id", java.util.UUID.randomUUID())
-//                .setString("name", "Product")
-//                .setString("description", "description");
+        BatchStatementBuilder batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
         for (int j = 1; j <= totalCategories; j++) {
-            UUID storeId = UUID.randomUUID();
-            UUID s = UUIDs.random();//
+            //UUID storeId = UUID.randomUUID();
+            //UUID s = UUIDs.random();//
 
             for (int k = 1; k <= totalStores; k++) {
-                //Adjust the logic for quantity as needed
                 for (int l = 1; l <= 40000; l++) {
-                    System.out.println(faker.commerce().department());
-                    System.out.println(faker.address().fullAddress());
                     UUID productId = UUID.randomUUID();
                     int quantity = random.nextInt(1000);
-                    validateAndInsertData(session, categories[j-1], store_address[k-1], productId, quantity, 0);
+                    batchBuilder.addStatement(session.prepare(insertDataQuery).bind()
+                                                        .setString("category_name", categories[j-1])
+                                                       .setString("store_address", store_address[k-1])
+                                                        .setUuid("product_id", productId)
+                                                        .setInt("quantity", quantity));
+                    //validateAndInsertData(session, categories[j-1], store_address[k-1], productId, quantity, 0);
+                    if (batchBuilder.getStatementsCount() >= 30) {
+                        session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+                        batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+                    }
                 }
-
+                //session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
+//                if (!batchBuilder.) {
+//                    session.execute(batchBuilder.build());
+//                }
             }
         }
-//        for (int i = 0; i < 75; i++) {
-//            BoundStatement boundStatement = session.prepare(insertDataQuery).bind()
-//                    .setUuid("category_id", UUID.randomUUID())
-//                    .setString("name", "Product" + i)
-//                    .setString("description", "Description" + i);
-//
-//            //boundStatement.setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM);
-//            session.execute(boundStatement.setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-//        }
-        //session.execute(boundStatement);
         LOGGER.info("Data inserted successfully");
     }
 
@@ -139,24 +162,17 @@ public class Repository {
     }
 
     static void selectData(CqlSession session) {
-        //SELECT * FROM my_keyspace.total_products_by_store WHERE category_name = 'Здоров’я';
         String selectDataQuery = String.format(
                 "SELECT * FROM \"%s\".\"%s\" WHERE category_name = '"+cat+"';",
                 KEYSPACE_NAME, TABLE_NAME2);
 
         ResultSet resultSet = session.execute(selectDataQuery);
 
-        //LOGGER.info("Selected data:");
-//        for (Row row : resultSet) {
-//            LOGGER.info(row.toString());
-//        }
         ArrayList<Long> total = new ArrayList<>();
         String Store_address = null;
         String Category_name = null;
         long max = 0;
         for (Row row : resultSet) {
-            //HashMap<String, Integer>
-            //UUID id = row.getUuid("id");
             Long Total_quantity = row.getLong("total_quantity");
             if (Total_quantity > max) {
                 max = Total_quantity;
@@ -164,14 +180,6 @@ public class Repository {
                 Category_name = row.getString("category_name");
             }
             total.add(Total_quantity);
-//            String Category_name = row.getString("category_name");
-//            String Store_address = row.getString("store_address");
-//            UUID product_id = row.getUuid("product_id");
-//            int quantity = row.getInt("quantity");
-//            // String description = row.getString("description");
-//
-//            LOGGER.info("Category_name: {}, Store_address: {}, Product_id: {}, Quantity: {}",
-//                    Category_name, Store_address, product_id, quantity);
         }
         LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
                 Category_name, Store_address, max);
