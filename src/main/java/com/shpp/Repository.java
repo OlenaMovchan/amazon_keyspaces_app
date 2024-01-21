@@ -104,7 +104,12 @@ public class Repository {
         String insertDataQuery = String.format(
                 "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
                 KEYSPACE_NAME, TABLE_NAME);
+
+        String updateTotalQuery = String.format(
+                "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_name = ? AND store_address = ?",
+                KEYSPACE_NAME, TABLE_NAME2);
         BatchStatementBuilder batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+        BatchStatementBuilder batchBuilder2 = BatchStatement.builder(DefaultBatchType.UNLOGGED);
         for (int j = 1; j <= totalCategories; j++) {
             //UUID storeId = UUID.randomUUID();
             //UUID s = UUIDs.random();//
@@ -118,12 +123,18 @@ public class Repository {
                                                        .setString("store_address", store_address[k-1])
                                                         .setUuid("product_id", productId)
                                                         .setInt("quantity", quantity));
+                    batchBuilder2.addStatement(session.prepare(updateTotalQuery).bind()
+                            .setString("category_name", categories[j-1])
+                            .setString("store_address", store_address[k-1])
+                            .setLong("total_quantity", quantity));
                     //validateAndInsertData(session, categories[j-1], store_address[k-1], productId, quantity, 0);
                     if (batchBuilder.getStatementsCount() >= 30) {
-                        session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+                        session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
                         batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+                        batchBuilder2 = BatchStatement.builder(DefaultBatchType.UNLOGGED);
                     }
                 }
+                System.out.println(">>>>>>>>40000");
                 //session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
 //                if (!batchBuilder.) {
 //                    session.execute(batchBuilder.build());
