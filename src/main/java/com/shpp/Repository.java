@@ -129,7 +129,8 @@ public class Repository {
                             .setLong("total_quantity", quantity));
                     //validateAndInsertData(session, categories[j-1], store_address[k-1], productId, quantity, 0);
                     if (batchBuilder.getStatementsCount() >= 30) {
-                        session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
+                        session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+                        session.execute(batchBuilder2.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
                         batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
                         batchBuilder2 = BatchStatement.builder(DefaultBatchType.UNLOGGED);
                     }

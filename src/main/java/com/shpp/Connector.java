@@ -20,7 +20,7 @@ public class Connector {
         Config config = ConfigFactory.load("application.conf");
         DriverConfigLoader configLoader = DriverConfigLoader.fromClasspath("application.conf");
         this.session = CqlSession.builder()
-                .withConfigLoader(configLoader)
+                //.withConfigLoader(configLoader)
                 .addContactPoint(new InetSocketAddress(host, port))
                 .withLocalDatacenter("eu-central-1")
                 .withKeyspace("my_keyspace")
