@@ -117,14 +117,14 @@ public class Repository {
             for (int k = 1; k <= totalStores; k++) {
                 for (int l = 1; l <= 40000; l++) {
                     UUID productId = UUID.randomUUID();
-                    int quantity = random.nextInt(1000);
+                    int quantity = random.nextInt(999);
                     batchBuilder.addStatement(session.prepare(insertDataQuery).bind()
-                                                        .setString("category_name", categories[quantity-1])
+                                                        .setString("category_name", categories[quantity])
                                                        .setString("store_address", store_address[k-1])
                                                         .setUuid("product_id", productId)
                                                         .setInt("quantity", quantity));
                     batchBuilder2.addStatement(session.prepare(updateTotalQuery).bind()
-                            .setString("category_name", categories[quantity-1])
+                            .setString("category_name", categories[quantity])
                             .setString("store_address", store_address[k-1])
                             .setLong("total_quantity", quantity));
                     //validateAndInsertData(session, categories[j-1], store_address[k-1], productId, quantity, 0);
