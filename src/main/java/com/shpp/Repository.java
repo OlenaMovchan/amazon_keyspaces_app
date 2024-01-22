@@ -115,7 +115,7 @@ public class Repository {
             //UUID s = UUIDs.random();//
 
             for (int k = 1; k <= totalStores; k++) {
-                for (int l = 1; l <= 40000; l++) {
+                for (int l = 1; l <= 10000; l++) {
                     UUID productId = UUID.randomUUID();
                     int quantity = random.nextInt(999);
                     batchBuilder.addStatement(session.prepare(insertDataQuery).bind()
@@ -135,7 +135,7 @@ public class Repository {
                         batchBuilder2 = BatchStatement.builder(DefaultBatchType.UNLOGGED);
                     }
                 }
-                System.out.println(">>>>>>>>40000");
+                System.out.println(">>>>>>>>10000");
                 //session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
 //                if (!batchBuilder.) {
 //                    session.execute(batchBuilder.build());
