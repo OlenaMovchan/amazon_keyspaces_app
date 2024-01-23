@@ -22,7 +22,7 @@ public class Repo {
     private static final String KEYSPACE_NAME = "my_keyspace";
     private static final String TABLE_NAME = "store_product_table_";
     private static final String TABLE_NAME2 = "total_products_by_store_";
-    static int totalProducts = 40000;
+    static int totalProducts = 10000;
     static int totalStores = 75;
     static int totalCategories = 1000;
     static String category = "";
