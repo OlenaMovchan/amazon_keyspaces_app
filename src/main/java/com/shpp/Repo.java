@@ -22,24 +22,21 @@ public class Repo {
     private static final String KEYSPACE_NAME = "my_keyspace";
     private static final String TABLE_NAME = "store_product_table_";
     private static final String TABLE_NAME2 = "total_products_by_store_";
-    static int totalProducts = 10000;
-    static int totalStores = 75;
-    static int totalCategories = 1000;
+    static int totalProducts = 4000;
+    static int totalStores = 25;
+    static int totalCategories = 100;
     static String category = "";
-    static int numberOfThreads = 100;
+    static int numberOfThreads = 10;
 
     public void insertData(CqlSession session) {
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 
-
-
-
         Random random = new Random();
         String[] storeAddress = generateStoreData(totalStores);
         String[] categories = generateCategoryData(totalCategories);
 
-        category = categories[10];
+        category = categories[1];
         try {
             CompletableFuture<Void>[] futures = IntStream.range(1, totalStores+1)
                     .parallel()
