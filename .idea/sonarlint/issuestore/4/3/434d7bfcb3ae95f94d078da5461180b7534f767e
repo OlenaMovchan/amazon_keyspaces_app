@@ -1,3 +1,7 @@
 
+r
+java:S1104"PMake port a static final constant or non-public and provide accessors if needed.(±–¨„ûÿÿÿÿ8¯´ÈŞÒ1
+L
+java:S1444"*Make this "public static port" field final(±–¨„ûÿÿÿÿ8°´ÈŞÒ1
 R
-java:S2209"5Change this instance-reference to a static reference.(·»¶‰8âÈÀÒ1
+java:S2209"5Change this instance-reference to a static reference.(·»¶‰8âÈÀÒ1

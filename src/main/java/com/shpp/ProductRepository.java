@@ -1,6 +1,7 @@
 package com.shpp;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.BatchStatement;
 import com.datastax.oss.driver.api.core.cql.BatchStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
@@ -50,13 +51,13 @@ public class ProductRepository {
 
         BatchStatementBuilder batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
 
-        for (int j = 0; j < totalCategories; j++) {
+
             for (int k = 0; k < totalStores; k++) {
                 for (int l = 0; l < totalProducts; l++) {
                     UUID productId = UUID.randomUUID();
-                    int quantity = random.nextInt(1000);
+                    int quantity = random.nextInt(999);
 
-                    batchBuilder.addStatement(createInsertStatement(categories[j], storeAddresses[k], productId, quantity));
+                    batchBuilder.addStatement(createInsertStatement(categories[quantity], storeAddresses[k], productId, quantity));
 
                     if (batchBuilder.getStatementsCount() >= batchSize) {
                         executeBatch(batchBuilder.build());
@@ -64,17 +65,17 @@ public class ProductRepository {
                     }
                 }
             }
-        }
 
-        // Execute any remaining statements in the batch
-//        if (!batchBuilder.isEmpty()) {
-//            executeBatch(batchBuilder.build());
-//        }
+
+
+        if (batchBuilder.getStatementsCount() < batchSize) {
+            executeBatch(batchBuilder.build());
+        }
 
         LOGGER.info("Data inserted successfully");
     }
 
-    private BoundStatement createInsertStatement(String categoryName, String storeAddress, UUID productId, int quantity) {
+    public BoundStatement createInsertStatement(String categoryName, String storeAddress, UUID productId, int quantity) {
         String insertDataQuery = String.format(
                 "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
                 KEYSPACE_NAME, TABLE_NAME);
@@ -86,7 +87,7 @@ public class ProductRepository {
                 .setInt("quantity", quantity);
     }
 
-    private void executeBatch(BatchStatement batch) {
-        session.execute(batch.setConsistencyLevel(com.datastax.oss.driver.api.core.DefaultConsistencyLevel.LOCAL_ONE));
+    public void executeBatch(BatchStatement batch) {
+        session.execute(batch.setConsistencyLevel(DefaultConsistencyLevel.LOCAL_ONE));
     }
 }

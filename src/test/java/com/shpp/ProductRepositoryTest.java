@@ -71,20 +71,3 @@ public class ProductRepositoryTest {
 //        assertTrue(firstStatement.getInt("quantity") >= 0 && firstStatement.getInt("quantity") < 1000);
     }
 }
-//    ArgumentCaptor<BatchStatement> batchCaptor = ArgumentCaptor.forClass(BatchStatement.class);
-//
-//    productRepository.insertProductsInBatches(totalProducts, totalStores, totalCategories, batchSize);
-//
-//    verify(mockSession, atLeastOnce()).execute(batchCaptor.capture());
-//    BatchStatement capturedBatch = batchCaptor.getValue();
-//    List<BoundStatement> capturedStatements = capturedBatch.getStatements();
-//
-//    // Verify the correct number of statements are in the batch
-//    assertEquals(totalProducts * totalStores * totalCategories, capturedStatements.size());
-//
-//    // Verify the content of the first statement
-//    BoundStatement firstStatement = capturedStatements.get(0);
-//    assertEquals("Category_0", firstStatement.getString("category_name"));
-//    assertEquals("Store_0", firstStatement.getString("store_address"));
-//    assertNotNull(firstStatement.getUuid("product_id"));
-//    assertTrue(firstStatement.getInt("quantity") >= 0 && firstStatement.getInt("quantity") < 1000);

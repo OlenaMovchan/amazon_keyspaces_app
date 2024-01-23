@@ -4,33 +4,23 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.UniqueElements;
+
+import java.util.UUID;
 
 public class Product {
-    @NotBlank
-    @NotNull
-    private String productName;
-    @Min(1)
-    @Max(1000)
-    private int categoryId;
+    private UUID productId;
 
-    public Product(String productName, int categoryId) {
-        this.productName = productName;
-        this.categoryId = categoryId;
+    public Product(UUID productId) {
+        this.productId = productId;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public UUID getProductId() {
+        return productId;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setProductId(UUID productId) {
+        this.productId = productId;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
 }
