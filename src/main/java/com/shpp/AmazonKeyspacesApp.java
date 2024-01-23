@@ -23,13 +23,10 @@ public class AmazonKeyspacesApp {
     private static final String TABLE_NAME2 = "total_products_by_store_";
 
     public static void main(String[] args) {
-        try {
+
             new AmazonKeyspacesApp().run();
-        }
-        catch (Exception e) {
-            LOGGER.error("err", e.getStackTrace());
-            System.exit(1);
-        }
+
+
 
     }
 
@@ -59,7 +56,7 @@ public class AmazonKeyspacesApp {
         repository.insertData(session);
         stopWatch.stop();
         LOGGER.info("Data generation completed");
-        LOGGER.info("Generation and insertion time: " + stopWatch.getTime() + " ms"+", speed " + 3000000/(stopWatch.getTime()/1000)+"/s");
+        LOGGER.info("Generation and insertion time: " + stopWatch.getTime() + " ms");
         //+", speed " + 3000000/(stopWatch.getTime()/1000)+"/s"
 
         stopWatch.reset();
