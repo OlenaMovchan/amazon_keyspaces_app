@@ -23,7 +23,13 @@ public class AmazonKeyspacesApp {
     private static final String TABLE_NAME2 = "total_products_by_store_";
 
     public static void main(String[] args) {
-        new AmazonKeyspacesApp().run();
+        try {
+            new AmazonKeyspacesApp().run();
+        }
+        catch (Exception e) {
+            LOGGER.error("err", e.getMessage());
+            System.exit(1);
+        }
 
     }
 
