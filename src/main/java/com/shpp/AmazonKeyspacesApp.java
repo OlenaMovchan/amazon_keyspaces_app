@@ -27,7 +27,7 @@ public class AmazonKeyspacesApp {
             new AmazonKeyspacesApp().run();
         }
         catch (Exception e) {
-            LOGGER.error("err", e.getMessage());
+            LOGGER.error("err", e.getStackTrace());
             System.exit(1);
         }
 
