@@ -1,8 +1,6 @@
 
 U
 %src/main/java/com/shpp/Connector.java,9\7\977e47331574a9624f83c88a75161351740ce3f9
-S
-#src/test/java/com/shpp/AppTest.java,7\6\761718a20c131fa4096760f7f331de9567458d7d
 D
 src/assembly/zip.xml,4\4\442721b68096c1d6d97c5e6b07abc24ac8a1d0d4
 7
@@ -11,3 +9,19 @@ D
 .src/main/java/com/shpp/AmazonKeyspacesApp.java,4\3\434d7bfcb3ae95f94d078da5461180b7534f767e
 V
 &src/main/java/com/shpp/Repository.java,1\5\15f03f81c5d2bfcc9e8a47487e986a9bd1469ac5
+Z
+*src/main/java/com/shpp/ValidatorClass.java,c\7\c784e4457dc010a2e6263c436feca7c33e1ee133
+^
+.src/test/java/com/shpp/AmazonKeyspacesApp.java,1\8\181498c66f5cb807354ad41dcb8f3c08b3c1ef9d
+]
+-src/main/java/com/shpp/ProductRepository.java,a\1\a121cd955b0288bce84c23dac8c60a028b466f02
+Y
+)src/test/java/com/shpp/ConnectorTest.java,7\d\7db84163e16d3e46d940b8b14d727a76b80d7f2a
+a
+1src/test/java/com/shpp/ProductRepositoryTest.java,d\e\de3ab63a0af3b787470e8d55b3bc90cad0c25cfc
+X
+(src/main/java/com/shpp/dto/Category.java,a\b\ab9c4b36f186972bdea570462a744dbcf6fec432
+W
+'src/main/java/com/shpp/dto/Product.java,0\b\0b6add013995a5c06ee29a3ee06530c79334ea59
+U
+%src/main/java/com/shpp/dto/Store.java,5\e\5ed80e5691d40325e1fd009d1f0fac512987936b

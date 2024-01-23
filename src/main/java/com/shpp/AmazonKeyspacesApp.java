@@ -1,73 +1,73 @@
 package com.shpp;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.shpp.repository.CreationTables;
+import com.shpp.repository.DataSelection;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+
 import static com.shpp.Repository.*;
 
 /**
  * Hello world!
- *
  */
 public class AmazonKeyspacesApp {
     static String contactPoint = "cassandra.eu-central-1.amazonaws.com";
-    static String username = "cassandra-at-271420611782";
-    static String password = "+YI+MZcwHbAUo1AKOe4gUy1cY4A8dDPXsMrK/V1hQUs=";
     public static int port = 9142;
-    public static final Logger LOGGER = LoggerFactory.getLogger(AmazonKeyspacesApp.class);
+    public static Logger LOGGER = LoggerFactory.getLogger(AmazonKeyspacesApp.class);
     public static final String KEYSPACE_NAME = "my_keyspace";
-    public static final String TABLE_NAME = "store_product_table";
+    public static final String TABLE_NAME = "store_product_table_";
+    private static final String TABLE_NAME2 = "total_products_by_store_";
 
     public static void main(String[] args) {
         new AmazonKeyspacesApp().run();
 
     }
-    public static void run(){
-        System.out.println("Start programm");
-        System.out.println("20-01-19-56");
-        //try (CqlSession session = CqlSession.builder()
+
+    public static void run() {
+        String category = System.getProperty("categoryName", "Дім");
         Connector connector = new Connector();
         connector.connect(contactPoint, port);
         CqlSession session = connector.getSession();
-//        CqlSession session = CqlSession.builder()
-//                .addContactPoint(new InetSocketAddress(contactPoint, port))
-//                .withLocalDatacenter("eu-central-1")
-//                .withKeyspace(KEYSPACE_NAME)
-//                .withAuthCredentials(username, password)
-//                .build();//) //{
+        CreationTables creationTables = new CreationTables();
+        Repo repository = new Repo();
+        DataSelection dataSelection = new DataSelection(session);
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        createTable(session);
+
+        creationTables.createTable(session);
 
         waitForTableCreation(session, TABLE_NAME);
+        waitForTableCreation(session, TABLE_NAME2);
         stopWatch.stop();
         LOGGER.info("Tables created successfully");
 
-
         stopWatch.reset();
-
         stopWatch.start();
-        insertData(session);
+
+        //executeInsert(session);
+        repository.insertData(session);
         stopWatch.stop();
         LOGGER.info("Data generation completed");
-        LOGGER.info("Generation and insertion time: " + stopWatch.getTime() + " ms");
+        LOGGER.info("Generation and insertion time: " + stopWatch.getTime() + " ms"+", speed " + 3000000/(stopWatch.getTime()/1000)+"/s");
+        //+", speed " + 3000000/(stopWatch.getTime()/1000)+"/s"
 
         stopWatch.reset();
         stopWatch.start();
-        selectData(session);
+
+        dataSelection.selectData(category);
+
         stopWatch.stop();
         LOGGER.info("Query time: " + stopWatch.getTime() + " ms");
 
         connector.close();
         LOGGER.info("Connector close");
-        //session.close();
-//        } catch (Exception e) {
-//            LOGGER.error("Error ", e.getMessage());
-//        }
     }
+
     public static void waitForTableCreation(CqlSession session, String tableName) {
         long startTime = System.currentTimeMillis();
         long timeoutMillis = TimeUnit.MINUTES.toMillis(5);

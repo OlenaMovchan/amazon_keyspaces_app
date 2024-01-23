@@ -8,7 +8,6 @@ public class Category {
     @NotNull
     private String categoryName;
 
-
     public Category(String categoryName) {
         this.categoryName = categoryName;
     }
