@@ -33,7 +33,7 @@ public class DataSelection {
             ResultSet resultSet1 = session.execute(select);
            UUID category_id = null;
             for (Row row: resultSet1) {
-                category_id = UUID.fromString(row.getString("category_id"));
+                category_id = row.getUuid("category_id");
             }
             String selectDataQuery = String.format(
                     "SELECT * FROM \"%s\".\"%s\" WHERE category_id = '" + category_id + "';",
