@@ -34,7 +34,7 @@ public class DataSelection {
                 category_id = row.getString("category_name");
             }
             String selectDataQuery = String.format(
-                    "SELECT * FROM \"%s\".\"%s\" WHERE category_name = '" + category_id + "';",
+                    "SELECT * FROM \"%s\".\"%s\" WHERE category_id = '" + category_id + "';",
                     KEYSPACE_NAME, totalProductsByStore);
 
             ResultSet resultSet = session.execute(selectDataQuery);
