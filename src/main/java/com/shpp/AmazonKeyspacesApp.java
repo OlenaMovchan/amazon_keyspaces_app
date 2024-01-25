@@ -88,14 +88,14 @@ public class AmazonKeyspacesApp {
         LOGGER.info("Data generation completed");
         LOGGER.info("Generation and insertion time: " + stopWatch.getTime() + " ms");
 
-        stopWatch.reset();
-        stopWatch.start();
-
-        String category = System.getProperty("categoryName", "Дім");
-        dataSelection.selectData(category);
-
-        stopWatch.stop();
-        LOGGER.info("Query time: " + stopWatch.getTime() + " ms");
+//        stopWatch.reset();
+//        stopWatch.start();
+//
+//        String category = System.getProperty("categoryName", "Дім");
+//        dataSelection.selectData(category);
+//
+//        stopWatch.stop();
+//        LOGGER.info("Query time: " + stopWatch.getTime() + " ms");
 
         connector.close();
         LOGGER.info("Connector close");
