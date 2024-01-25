@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import com.datastax.oss.driver.api.core.CqlSession;
 
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
+import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.Statement;
 import com.shpp.dto.CategoryDto;
@@ -59,7 +60,7 @@ class DataInsTest {
                 new CategoryDto(UUID.randomUUID(), "Category2")
         );
 
-        BoundStatement mockPreparedStatement = mock(BoundStatement.class);
+        PreparedStatement mockPreparedStatement = mock(BoundStatement.class).getPreparedStatement();
         when(mockSession.prepare(anyString())).thenReturn((PreparedStatement) mockPreparedStatement);
 
         dataIns.insertStoreProductDataParallel(storeData, productData, categoryData);
@@ -70,12 +71,12 @@ class DataInsTest {
         ArgumentCaptor<Integer> quantityCaptor = ArgumentCaptor.forClass(Integer.class);
 
         verify(mockSession, atLeastOnce()).execute((Statement<?>) any());
-//        verify(mockPreparedStatement, atLeastOnce()).bind(
-//                categoryCaptor.capture(),
-//                storeCaptor.capture(),
-//                productCaptor.capture(),
-//                quantityCaptor.capture()
-//        );
+        verify(mockPreparedStatement, atLeastOnce()).bind(
+                categoryCaptor.capture(),
+                storeCaptor.capture(),
+                productCaptor.capture(),
+                quantityCaptor.capture()
+        );
 
         List<UUID> capturedCategories = categoryCaptor.getAllValues();
         List<UUID> capturedStores = storeCaptor.getAllValues();
