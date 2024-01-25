@@ -77,9 +77,10 @@ public class AmazonKeyspacesApp {
             ins.insertStoreData(session, storeData);
             ins.insertCategoryData(session, categoryData);
             ins.insertProductData(session,productData);
+
             ins.insertStoreProductDataParallel(storeData, productData, categoryData);
         } catch (Exception e) {
-            LOGGER.error("error insert" , e.getStackTrace());
+            LOGGER.error("error insert" , e.getMessage());
             System.exit(1);
         }
 
