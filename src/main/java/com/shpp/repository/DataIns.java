@@ -63,11 +63,11 @@ public class DataIns {
                                     .setInt("quantity", quantity)
                                     .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
 
-//                            session.execute(preparedStatementUpdate.bind()
-//                                    .setLong("total_quantity", quantity)
-//                                    .setUuid("category_id", randomCategory.getCategoryId())
-//                                    .setUuid("store_id", storeDto.getStoreId())
-//                                    .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+                            session.execute(preparedStatementUpdate.bind()
+                                    .setLong("total_quantity", quantity)
+                                    .setUuid("category_id", randomCategory.getCategoryId())
+                                    .setUuid("store_id", storeDto.getStoreId())
+                                    .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
                         })
                 )
         ).invoke();
