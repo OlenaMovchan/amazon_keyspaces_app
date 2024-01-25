@@ -42,8 +42,8 @@ public class DataSelection {
                     target = category_id;
                     LOGGER.info("Target  " + target);
                 }
-                LOGGER.info("UUID   " + category_id);
-                LOGGER.info("Category  " + categoryName);
+                //LOGGER.info("UUID   " + category_id);
+                //LOGGER.info("Category  " + categoryName);
             }
             if (target.equals(null)) {
                 LOGGER.info("There is no such category in the database: {}", category);
