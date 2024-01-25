@@ -1,112 +1,128 @@
 package com.shpp.repository;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
-import com.datastax.oss.driver.api.core.cql.BatchStatement;
-import com.datastax.oss.driver.api.core.cql.BatchStatementBuilder;
-import com.datastax.oss.driver.api.core.cql.DefaultBatchType;
 import com.github.javafaker.Faker;
-import com.shpp.dto.Store;
+import com.shpp.ValidatorClass;
+import com.shpp.dto.CategoryDto;
+import com.shpp.dto.StoreDto;
 import jakarta.validation.ConstraintViolation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Locale;
-import java.util.Random;
+import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
-public class DataInsertion {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataInsertion.class);
-    private static final String KEYSPACE_NAME = "my_keyspace";
-    private static final String TABLE_NAME = "store_product_table";
-    private static final String TABLE_NAME2 = "total_products_by_store";
-    private static final int BATCH_SIZE_LIMIT = 30;
-    private static CqlSession session;
+import com.shpp.dto.ProductDto;
 
-    public DataInsertion(CqlSession session) {
-        this.session = session;
+
+import java.util.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class DataInsertion {
+    ValidatorClass validatorClass = new ValidatorClass<>();
+    private final Logger LOGGER = LoggerFactory.getLogger(DataInsertion.class);
+    private final String KEYSPACE_NAME = "my_keyspace";
+    private final String TABLE_NAME = "store_product_table_";
+    private final String TABLE_NAME2 = "total_products_by_store_";
+    public int totalProducts = 400;
+    public int totalStores = 5;
+    public int totalCategories = 100;
+    public int numberOfThreads =2;
+    public String category = "";
+    public String getCategory() {
+        return category;
     }
 
-    public static void insertData(int totalStores, int totalProducts, int totalCategories) {
-        String[] categories = generateCategories(totalCategories);
+    public void insertData(CqlSession session) {
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 
-        BatchStatementBuilder batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
-        BatchStatementBuilder batchBuilderUpdate = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+        Random random = new Random();
+        String[] storeAddress = generateStoreData(totalStores);
+        String[] categories = generateCategoryData(totalCategories);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        category = categories[1];
 
-        IntStream.range(0, totalStores)
-                .forEach(k -> executorService.execute(() -> generateAndValidateData(
-                        categories, totalProducts, batchBuilder, batchBuilderUpdate)));
+        try {
+            IntStream.range(0, totalStores)
+                    //.parallel()
+                    .forEach(store -> insertStoreData(store, session, categories, storeAddress, random, executorService));
+        } finally {
+            executorService.shutdown();
+        }
 
-        executorService.shutdown();
-
-        executeRemainingStatements(session, batchBuilder, batchBuilderUpdate);
         LOGGER.info("Data inserted successfully");
     }
 
-    private static void executeRemainingStatements(
-            CqlSession session, BatchStatementBuilder batchBuilder, BatchStatementBuilder batchBuilderUp) {
-        if (batchBuilder.getStatementsCount() > 0) {
-            session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-            session.execute(batchBuilderUp.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-        }
+    public void insertStoreData(int i, CqlSession session, String[] categories, String[] storeAddress, Random random, ExecutorService executorService) {
+        IntStream.range(0, totalProducts)
+                //.parallel()
+                .forEach(numProduct -> {
+                    ProductDto product = new ProductDto(UUID.randomUUID());
+                    int quantity = random.nextInt(totalCategories);
+                    try {
+                        executeInsert(session, categories[quantity], storeAddress[i], product.getProductId(), quantity, executorService);
+                    } catch (Exception e) {
+                        LOGGER.error("Error inserting data for store {}, product {}: {}", storeAddress[i], product.getProductId(), e.getMessage());
+                    }
+                });
+
+        LOGGER.info("Data insert in " + i + " store, address: " + storeAddress[i]);
     }
 
-    private static void generateAndValidateData(
-            String[] categories, int totalProducts,
-            BatchStatementBuilder batchBuilder, BatchStatementBuilder batchBuilderUp) {
-        Random random = new Random();
-        String category = categories[10];
-        String insertDataQuery = String.format(
-                "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
-                KEYSPACE_NAME, TABLE_NAME);
-        String updateTotalQuery = String.format(
-                "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_name = ? AND store_address = ?",
-                KEYSPACE_NAME, TABLE_NAME2);
+    public void executeInsert(CqlSession session, String category, String storeAddress, UUID productId, int quantity, ExecutorService executorService) {
+        executorService.submit(() -> {
+            String insertDataQuery = String.format(
+                    "INSERT INTO %s.%s (category_name, store_address, product_id, quantity) VALUES (?, ?, ?, ?)",
+                    KEYSPACE_NAME, TABLE_NAME);
 
-//        for (int l = 1; l <= totalProducts; l++) {
-//            Store storeDTO = generateStoreDTO(75);
-//            Set<ConstraintViolation<Store>> violations = ValidatorClass.validateStoreDTO(storeDTO);
+            String updateTotalQuery = String.format(
+                    "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_name = ? AND store_address = ?",
+                    KEYSPACE_NAME, TABLE_NAME2);
+            try {
+                session.execute(session.prepare(insertDataQuery).bind()
+                        .setString("category_name", category)
+                        .setString("store_address", storeAddress)
+                        .setUuid("product_id", productId)
+                        .setInt("quantity", quantity));
 
-//            if (violations.isEmpty()) {
-//                batchBuilder.addStatement(session.prepare(insertDataQuery).bind()
-//                        .setString("category_name", storeDTO.getCategoryName())
-//                        .setString("store_address", storeDTO.getLocation())
-//                        .setUuid("product_id", UUID.randomUUID())
-//                        .setInt("quantity", random.nextInt(25)));
-//
-//                batchBuilderUp.addStatement(session.prepare(updateTotalQuery).bind()
-//                        .setString("category_name", storeDTO.getCategoryName())
-//                        .setString("store_address", storeDTO.getLocation())
-//                        .setLong("total_quantity", random.nextInt(25)));
-//            } else {
-//                LOGGER.warn("Validation failed for StoreDTO: {}", storeDTO);
-//            }
-
-            if (batchBuilder.getStatementsCount() >= BATCH_SIZE_LIMIT) {
-                session.execute(batchBuilder.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-                session.execute(batchBuilderUp.build().setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-                batchBuilder = BatchStatement.builder(DefaultBatchType.UNLOGGED);
-                batchBuilderUp = BatchStatement.builder(DefaultBatchType.UNLOGGED);
+                session.execute(session.prepare(updateTotalQuery).bind()
+                        .setString("category_name", category)
+                        .setString("store_address", storeAddress)
+                        .setLong("total_quantity", quantity));
+            } catch (Exception e) {
+                LOGGER.error("Error executing query: {}", e.getMessage());
             }
-        //}
+        });
     }
 
-    private static String[] generateCategories(int totalCategories) {
-        return IntStream.range(0, totalCategories)
-                .mapToObj(i -> new Faker(new Locale("uk")).commerce().department())
+    public String[] generateStoreData(int totalStore) {
+        Faker faker = new Faker(new Locale("uk"));
+        return IntStream.range(0, totalStore)
+                .mapToObj(i -> faker.address().fullAddress())
+                .map(address -> {
+                    StoreDto store = new StoreDto(address);
+                    Set<ConstraintViolation<StoreDto>> violations = validatorClass.validateDTO(store);
+                    return violations.isEmpty() ? address : null;
+                })
+                .filter(Objects::nonNull)
                 .toArray(String[]::new);
     }
 
-    private static String[] generateStoreDTO(int totalStores) {
-        return IntStream.range(0, totalStores)
-                .mapToObj(i -> new Faker(new Locale("uk")).address().fullAddress())
+    public String[] generateCategoryData(int totalCategory) {
+        Faker faker = new Faker(new Locale("uk"));
+
+        return IntStream.range(0, totalCategory)
+                .mapToObj(i -> faker.commerce().department())
+                .map(name -> {
+                    CategoryDto category = new CategoryDto(name);
+                    Set<ConstraintViolation<CategoryDto>> violations = validatorClass.validateDTO(category);
+                    return violations.isEmpty() ? name : null;
+                })
+                .filter(Objects::nonNull)
                 .toArray(String[]::new);
     }
-
 }
-

@@ -1,51 +1,88 @@
 package com.shpp;
-import java.util.Set;
 
-import com.shpp.dto.Store;
+import java.util.Set;
+import com.shpp.dto.CategoryDto;
+import com.shpp.dto.StoreDto;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+
 public class ValidatorClassTest {
 
     @Test
-    void testValidDTO() {
-        // Arrange
-        ValidatorClass<Store> validatorClass = new ValidatorClass<>();
-        Store validDTO = new Store("Valid Value");
+    void validateCategoryPositive() {
 
-        // Act
-        Set<ConstraintViolation<Store>> violations = validatorClass.validateDTO(validDTO);
+        ValidatorClass<CategoryDto> validatorClass = new ValidatorClass<>();
+        CategoryDto validDTO = new CategoryDto("Музика");
 
-        // Assert
+        Set<ConstraintViolation<CategoryDto>> violations = validatorClass.validateDTO(validDTO);
+
         assertTrue(violations.isEmpty());
     }
 
     @Test
-    void testInvalidDTO() {
-        // Arrange
-        ValidatorClass<Store> validatorClass = new ValidatorClass<>();
-        Store invalidDTO = new Store(null); // Invalid value
+    @DisplayName("😱")
+    void validateCategoryNegative() {
 
-        // Act
-        Set<ConstraintViolation<Store>> violations = validatorClass.validateDTO(invalidDTO);
+        ValidatorClass<CategoryDto> validatorClass = new ValidatorClass<>();
+        CategoryDto invalidDTO = new CategoryDto(null);
 
-        // Assert
+        Set<ConstraintViolation<CategoryDto>> violations = validatorClass.validateDTO(invalidDTO);
+
         assertFalse(violations.isEmpty());
-        assertEquals(2, violations.size());//TODO
 
+        assertEquals(2, violations.size());
     }
 
     @Test
     @DisplayName("😱")
-    void testExceptionThrownForInvalidDTO() {
-        // Arrange
-        ValidatorClass<Store> validatorClass = new ValidatorClass<>();
-        Store invalidDTO = new Store(null); // Invalid value
+    void validateCategoryBad() {
 
-        // Act & Assert
-        assertThrows(ValidationException.class, () -> validatorClass.validateDTO(invalidDTO));
+        ValidatorClass<CategoryDto> validatorClass = new ValidatorClass<>();
+        CategoryDto invalidDTO = new CategoryDto("");
+
+        Set<ConstraintViolation<CategoryDto>> violations = validatorClass.validateDTO(invalidDTO);
+
+        assertFalse(violations.isEmpty());
+
+        assertEquals(1, violations.size());
+    }
+
+    @Test
+    void validateStorePositive() {
+
+        ValidatorClass<StoreDto> validatorClass = new ValidatorClass<>();
+        StoreDto validDTO = new StoreDto("вулиця Староміська, 8, Запоріжжя,  84478");
+
+        Set<ConstraintViolation<StoreDto>> violations = validatorClass.validateDTO(validDTO);
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("😱")
+    void validateStoreNegative() {
+
+        ValidatorClass<StoreDto> validatorClass = new ValidatorClass<>();
+        StoreDto invalidDTO = new StoreDto(null);
+
+        Set<ConstraintViolation<StoreDto>> violations = validatorClass.validateDTO(invalidDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(2, violations.size());
+    }
+
+    @Test
+    @DisplayName("😱")
+    void validateStoreBad() {
+
+        ValidatorClass<StoreDto> validatorClass = new ValidatorClass<>();
+        StoreDto invalidDTO = new StoreDto("");
+
+        Set<ConstraintViolation<StoreDto>> violations = validatorClass.validateDTO(invalidDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
     }
 }
