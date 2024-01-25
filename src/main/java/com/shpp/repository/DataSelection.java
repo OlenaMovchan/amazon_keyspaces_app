@@ -6,6 +6,8 @@ import com.datastax.oss.driver.api.core.cql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 public class DataSelection {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DataSelection.class);
@@ -29,9 +31,9 @@ public class DataSelection {
                     "SELECT * FROM \"%s\".\"%s\" WHERE category_name = '" + category + "'ALLOW FILTERING;",
                     KEYSPACE_NAME, categoryTable);
             ResultSet resultSet1 = session.execute(select);
-            String category_id = "";
+           UUID category_id = null;
             for (Row row: resultSet1) {
-                category_id = row.getString("category_name");
+                category_id = UUID.fromString(row.getString("category_name"));
             }
             String selectDataQuery = String.format(
                     "SELECT * FROM \"%s\".\"%s\" WHERE category_id = '" + category_id + "';",
