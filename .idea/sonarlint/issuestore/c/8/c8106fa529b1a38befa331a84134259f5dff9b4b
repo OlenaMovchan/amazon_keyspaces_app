@@ -1,0 +1,24 @@
+
+Q
+java:S3740"/Provide the parametrized type for this generic.(°ñô¼ýÿÿÿÿ8“­…€Ô1
+v	java:S115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ž¬–Ü8˜­…€Ô1
+{	java:S115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ÓÄ‘˜ÿÿÿÿÿ8˜­…€Ô1
+v	java:S115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(¦œ÷å8˜­…€Ô1
+v	java:S115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(Žø á8˜­…€Ô1
+{	java:S115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ôÇŽ„ûÿÿÿÿ8˜­…€Ô1
+Z
+java:S1128"=Remove this unused import 'com.datastax.driver.core.Session'.(¡ä‰Å8–ÉŸ„Ô1
+c
+java:S1128"ARemove this unused import 'com.datastax.driver.core.utils.UUIDs'.(ïÓõÓüÿÿÿÿ8˜ÉŸ„Ô1
+S
+java:S1068"1Remove this unused "KEYSPACE_NAME" private field.(‚Üå¦ýÿÿÿÿ8§­…€Ô1
+R
+java:S1068"5Remove this unused "storeProductTable" private field.(ž¬–Ü8§­…€Ô1
+Z
+java:S1068"8Remove this unused "totalProductsByStore" private field.(ÓÄ‘˜ÿÿÿÿÿ8§­…€Ô1
+N
+java:S1068"1Remove this unused "categoryTable" private field.(¦œ÷å8§­…€Ô1
+K
+java:S1068".Remove this unused "storeTable" private field.(Žø á8§­…€Ô1
+R
+java:S1068"0Remove this unused "productTable" private field.(ôÇŽ„ûÿÿÿÿ8§­…€Ô1

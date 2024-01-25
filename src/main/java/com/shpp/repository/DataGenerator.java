@@ -14,25 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataGenerator {
-
     ValidatorClass validatorClass = new ValidatorClass<>();
-    private static final String KEYSPACE_NAME = "your_keyspace_name";
-
-    // Your table names
-    private static final String storeProductTable = "store_product";
-    private static final String totalProductsByStore = "total_products_by_store";
-    private static final String categoryTable = "category";
-    private static final String storeTable = "store";
-    private static final String productTable = "product";
     Faker faker = new Faker(new Locale("uk"));
-    int totalProducts = 1000;
-    int totalCategories = 100;
-    int totalStores = 25;
-    List<CategoryDto> categoryData = generateCategoryData(totalCategories);
-    List<StoreDto> storeData = generateStoreData(totalStores);
-    List<ProductDto> productData = generateProductData(totalProducts);
-    // Mock data generation methods (assuming you have appropriate DTO classes)
-
 
     public List<CategoryDto> generateCategoryData(int totalCategories) {
         return IntStream.range(0, totalCategories)

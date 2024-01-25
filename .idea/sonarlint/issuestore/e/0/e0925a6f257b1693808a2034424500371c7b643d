@@ -1,0 +1,22 @@
+
+m	java:S117#"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(…ñ©Õ8ÊØª‡Ô1
+a
+java:S2259L"EA "NullPointerException" could be thrown; "storeId" is nullable here.(ïŠï@8ÇÙª‡Ô1
+i
+java:S2637H"GParameter 2 to this call is marked "@NonNull" but null could be passed.(ÓÖ¸ºúÿÿÿÿ8ÇÙª‡Ô1
+s	java:S116"XRename this field "KEYSPACE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(í‹Êa8ÈÙª‡Ô1
+v	java:S116"URename this field "TABLE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Àøßäıÿÿÿÿ8ÈÙª‡Ô1
+=
+java:S1170"!Make this final field static too.(í‹Êa8ÈÙª‡Ô1
+C
+java:S1170"!Make this final field static too.(Àøßäıÿÿÿÿ8ÈÙª‡Ô1
+C
+java:S1170"!Make this final field static too.(ôé¤¾şÿÿÿÿ8ÈÙª‡Ô1
+A
+java:S3010"$Remove this assignment of "session".(ˆ«É³8ÎÙª‡Ô1
+R
+java:S2209"5Change this instance-reference to a static reference.(ˆ«É³8ÎÙª‡Ô1
+–
+java:S21590"zRemove this call to "equals"; comparisons against null always return false; consider using '== null' to check for nullity.(äœ58ÑÙª‡Ô1
+P
+java:S1068".Remove this unused "TABLE_NAME" private field.(Àøßäıÿÿÿÿ8ÓÙª‡Ô1

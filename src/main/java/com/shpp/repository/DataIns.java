@@ -22,13 +22,9 @@ public class DataIns {
     private String categoryTable;
     private String storeTable;
     private String productTable;
-    int totalProducts = 1000;
-    int totalCategories = 100;
-    int totalStores = 25;
+
     DataGenerator dataGenerator = new DataGenerator();
-    List<CategoryDto> categoryData = dataGenerator.generateCategoryData(totalCategories);
-    List<StoreDto> storeData = dataGenerator.generateStoreData(totalStores);
-    List<ProductDto> productData = dataGenerator.generateProductData(totalProducts);
+
 
     public DataIns(CqlSession session, String keyspaceName, String storeProductTable, String totalProductTable, String productTable, String storeTable, String categoryTable) {
         this.session = session;
@@ -84,11 +80,6 @@ public class DataIns {
                 keyspaceName, totalProductTable);
         PreparedStatement preparedStatement = session.prepare(insertQuery);
         PreparedStatement preparedStatementUpdate = session.prepare(updateTotalQuery);
-// session.execute(session.prepare(insertDataQuery).bind()
-//                        .setString("category_name", category)
-//                        .setString("store_address", storeAddress)
-//                        .setUuid("product_id", productId)
-//                        .setInt("quantity", quantity));
         storeData.forEach(storeDto -> productData.forEach(productDto -> {
             CategoryDto randomCategory = getRandomElement(categoryData);
             int quantity = new Random().nextInt(100);
@@ -152,6 +143,4 @@ public class DataIns {
         Random rand = new Random();
         return list.get(rand.nextInt(list.size()));
     }
-
-
 }
