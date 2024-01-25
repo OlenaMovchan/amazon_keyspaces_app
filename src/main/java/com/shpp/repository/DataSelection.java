@@ -14,6 +14,7 @@ public class DataSelection {
     private final String KEYSPACE_NAME = "my_keyspace";
     private final String TABLE_NAME = "store_product_table_";
     private static String categoryTable = "category_table";
+    private static String storeTable = "store_table";
     private final String totalProductsByStore = "total_products_by_store_";
     static CqlSession session;
 
@@ -41,19 +42,25 @@ public class DataSelection {
 
             ResultSet resultSet = session.execute(selectDataQuery);
 
-            String storeAddress = null;
+            UUID storeId = null;
             UUID categoryName = null;
             long largestAmount = 0;
             for (Row row : resultSet) {
                 Long totalQuantity = row.getLong("total_quantity");
                 if (totalQuantity > largestAmount) {
                     largestAmount = totalQuantity;
-                    storeAddress = row.getString("store_id");
+                    storeId = row.getUuid("store_id");
                     categoryName = row.getUuid("category_id");
                 }
             }
+            String select3 = String.format(
+                    "SELECT * FROM \"%s\".\"%s\" WHERE store_id = '" + storeId + "';",
+                    KEYSPACE_NAME, storeTable);
+
+            ResultSet resultSet2 = session.execute(select3);
+            String address = resultSet2.toString();
             LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
-                    categoryName, storeAddress, largestAmount);
+                    category, address, largestAmount);
         } catch (Exception e) {
             LOGGER.error("Error selecting data: {}", e.getMessage());
         }
