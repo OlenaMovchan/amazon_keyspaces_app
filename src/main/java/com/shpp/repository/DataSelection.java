@@ -42,14 +42,14 @@ public class DataSelection {
             ResultSet resultSet = session.execute(selectDataQuery);
 
             String storeAddress = null;
-            String categoryName = null;
+            UUID categoryName = null;
             long largestAmount = 0;
             for (Row row : resultSet) {
                 Long totalQuantity = row.getLong("total_quantity");
                 if (totalQuantity > largestAmount) {
                     largestAmount = totalQuantity;
                     storeAddress = row.getString("store_id");
-                    categoryName = row.getString("category_id");
+                    categoryName = row.getUuid("category_id");
                 }
             }
             LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
