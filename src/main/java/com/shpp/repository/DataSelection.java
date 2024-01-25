@@ -26,7 +26,7 @@ public class DataSelection {
                 return;
             }
             String select = String.format(
-                    "SELECT * FROM \"%s\".\"%s\" WHERE category_name = '" + category + "';",
+                    "SELECT * FROM \"%s\".\"%s\" WHERE category_name = '" + category + "'ALLOW FILTERING;",
                     KEYSPACE_NAME, categoryTable);
             ResultSet resultSet1 = session.execute(select);
             String category_id = "";
