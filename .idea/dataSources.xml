@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@2ce67af2-881a-4f65-acf0-2c741c85661a" uuid="60d7c283-93c7-4022-9d20-2371e91d16d9">
+    <data-source source="LOCAL" name="@cassandra.eu-central-1.amazonaws.com" uuid="60d7c283-93c7-4022-9d20-2371e91d16d9">
       <driver-ref>cassandra</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.CassandraJdbcDriver</jdbc-driver>
-      <jdbc-url>jdbc:cassandra://2ce67af2-881a-4f65-acf0-2c741c85661a:9042</jdbc-url>
+      <jdbc-url>jdbc:cassandra://cassandra.eu-central-1.amazonaws.com:9142</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <driver-properties>
         <property name="verifyServerCertificate" value="true" />
