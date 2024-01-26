@@ -2,11 +2,8 @@ package com.shpp;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import com.datastax.oss.driver.api.core.CqlSession;
-
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
-import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.Statement;
 import com.shpp.dto.CategoryDto;
@@ -16,11 +13,10 @@ import com.shpp.repository.DataIns;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ForkJoinPool;
+
 
 class DataInsTest {
 
@@ -29,10 +25,8 @@ class DataInsTest {
 
     @BeforeEach
     void setUp() {
-        // Mock CqlSession
         mockSession = mock(CqlSession.class);
 
-        // Instantiate DataIns with the mock session and other required parameters
         dataIns = new DataIns(
                 mockSession,
                 "testKeyspace",
