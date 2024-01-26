@@ -6,10 +6,16 @@ public class ProductDto {
 
     private UUID productId;
     private String name;
+    private UUID categoryId;
 
-    public ProductDto(UUID productId, String name) {
+    public ProductDto(UUID productId, String name, UUID categoryId) {
         this.productId = productId;
         this.name = name;
+        this.categoryId = categoryId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
     }
 
     public String getName() {

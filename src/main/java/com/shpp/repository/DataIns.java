@@ -6,6 +6,7 @@ import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import com.datastax.oss.driver.api.core.DriverTimeoutException;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.servererrors.WriteFailureException;
 import com.shpp.dto.CategoryDto;
 import com.shpp.dto.ProductDto;
 import com.shpp.dto.StoreDto;
@@ -61,12 +62,12 @@ public class DataIns {
                 forkJoinPool.submit(() ->
                         finalStoreData.parallelStream().forEach(storeDto ->
                                 finalProductData.parallelStream().forEach(productDto -> {
-                                    CategoryDto randomCategory = getRandomElement(categoryData);
+                                    //CategoryDto randomCategory = getRandomElement(categoryData);
                                     int quantity = new Random().nextInt(100);
 
                                     try {
                                         session.execute(preparedStatement.bind()
-                                                .setUuid("category_id", randomCategory.getCategoryId())
+                                                .setUuid("category_id", productDto.getCategoryId())
                                                 .setUuid("store_id", storeDto.getStoreId())
                                                 .setUuid("product_id", productDto.getProductId())
                                                 .setInt("quantity", quantity)
@@ -74,10 +75,10 @@ public class DataIns {
 
                                         session.execute(preparedStatementUpdate.bind()
                                                 .setLong("total_quantity", quantity)
-                                                .setUuid("category_id", randomCategory.getCategoryId())
+                                                .setUuid("category_id", productDto.getCategoryId())
                                                 .setUuid("store_id", storeDto.getStoreId())
                                                 .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-                                    } catch (DriverTimeoutException ex) {
+                                    } catch (DriverTimeoutException | WriteFailureException ex) {
                                         failedStores.add(storeDto);
                                         failedProducts.add(productDto);
                                     }
@@ -95,7 +96,7 @@ public class DataIns {
                     failedStores.clear(); // Clear the list for the next attempt
                     failedProducts.clear(); // Clear the list for the next attempt
                 }
-            } catch (DriverTimeoutException ex) {
+            } catch (DriverTimeoutException | WriteFailureException ex) {
                 System.err.println("Store_product. Query timed out on attempt " + attempt);
                 if (attempt == maxRetries) {
                     System.err.println("Store_product. Max retries reached. Exiting.");

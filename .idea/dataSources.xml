@@ -12,5 +12,12 @@
         <property name="consistencyLevel" value="LOCAL_QUORUM" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="@cassandra.eu-central-1.amazonaws.com [2]" uuid="7d831b6a-f3d2-4069-bc09-08bb4012e432">
+      <driver-ref>cassandra</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.dbschema.CassandraJdbcDriver</jdbc-driver>
+      <jdbc-url>jdbc:cassandra://cassandra.eu-central-1.amazonaws.com:9142/</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
