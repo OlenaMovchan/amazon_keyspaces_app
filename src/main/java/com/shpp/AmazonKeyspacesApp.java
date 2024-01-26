@@ -74,13 +74,13 @@ public class AmazonKeyspacesApp {
         List<StoreDto> storeData = dataGenerator.generateStoreData(totalStores);
         List<ProductDto> productData = dataGenerator.generateProductData(totalProducts);
         try {
-            ins.insertStoreData(session, storeData);
-            ins.insertCategoryData(session, categoryData);
-            ins.insertProductData(session,productData);
+            ins.insertStoreDataWithTry(session, storeData);
+            ins.insertCategoryDataWithTry(session, categoryData);
+            ins.insertProductDataWithTry(session,productData);
 
-            ins.insertStoreProductDataParallel(storeData, productData, categoryData);
+            ins.insertStoreProductDataParallelWithTry(storeData, productData, categoryData);
         } catch (Exception e) {
-            LOGGER.error("error insert" , e.getMessage());
+            LOGGER.error("Error insert" , e);
             System.exit(1);
         }
 
