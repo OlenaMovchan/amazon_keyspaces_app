@@ -80,7 +80,7 @@ public class DataSelection {
             LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
                     category, address, largestAmount);
         } catch (Exception e) {
-            LOGGER.error("Error selecting data: {}", e.getMessage());
+            LOGGER.error("Error selecting data: {}", e);
         }
     }
 }

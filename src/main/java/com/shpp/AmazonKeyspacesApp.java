@@ -67,12 +67,12 @@ public class AmazonKeyspacesApp {
         stopWatch.reset();
         stopWatch.start();
         DataGenerator dataGenerator = new DataGenerator();
-        int totalProducts = 5000;
-        int totalCategories = 1000;
-        int totalStores = 75;
+        int totalProducts = 20;
+        int totalCategories = 10;
+        int totalStores = 5;
         List<CategoryDto> categoryData = dataGenerator.generateCategoryData(totalCategories);
         List<StoreDto> storeData = dataGenerator.generateStoreData(totalStores);
-        List<ProductDto> productData = dataGenerator.generateProductData(totalProducts);
+        List<ProductDto> productData = dataGenerator.generateProductData(totalProducts, categoryData);
         try {
             ins.insertStoreDataWithTry(session, storeData);
             ins.insertCategoryDataWithTry(session, categoryData);

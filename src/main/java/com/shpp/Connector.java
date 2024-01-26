@@ -8,8 +8,8 @@ import java.net.InetSocketAddress;
 
 public class Connector {
     private CqlSession session;
-    private String username = "cassandra-at-271420611782";
-    private String password = "+YI+MZcwHbAUo1AKOe4gUy1cY4A8dDPXsMrK/V1hQUs=";
+    private String username = "cassandra-at-840190877311";
+    private String password = "WrbhdTLS2I2SYZpib1bfe3HGrL6jM8KMCxjC0IRH2lE=";
     public static final Logger LOGGER = LoggerFactory.getLogger(Connector.class);
 
     public void connect(String host, int port) {
