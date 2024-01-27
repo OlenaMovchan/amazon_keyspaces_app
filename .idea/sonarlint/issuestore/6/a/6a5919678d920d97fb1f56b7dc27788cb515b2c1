@@ -1,27 +1,27 @@
 
 Q
-java:S3740"/Provide the parametrized type for this generic.(°ñô¼ıÿÿÿÿ8ÆæÖâÓ1
+java:S3740"/Provide the parametrized type for this generic.(°ñô¼ıÿÿÿÿ8úëÑ´Ô1
 v
-java:S1104"YMake totalProducts a static final constant or non-public and provide accessors if needed.(§ô„›8ÈæÖâÓ1
+java:S1104"YMake totalProducts a static final constant or non-public and provide accessors if needed.(§ô„›8ıëÑ´Ô1
 y
-java:S1104 "WMake totalStores a static final constant or non-public and provide accessors if needed.(·³Ş’ùÿÿÿÿ8ÈæÖâÓ1
+java:S1104 "WMake totalStores a static final constant or non-public and provide accessors if needed.(·³Ş’ùÿÿÿÿ8ÿëÑ´Ô1
 w
-java:S1104!"[Make totalCategories a static final constant or non-public and provide accessors if needed.(®ß¢\8ÈæÖâÓ1
+java:S1104!"[Make totalCategories a static final constant or non-public and provide accessors if needed.(®ß¢\8€ìÑ´Ô1
 }
-java:S1104""[Make numberOfThreads a static final constant or non-public and provide accessors if needed.(™®ƒáÿÿÿÿÿ8ÈæÖâÓ1
+java:S1104""[Make numberOfThreads a static final constant or non-public and provide accessors if needed.(™®ƒáÿÿÿÿÿ8€ìÑ´Ô1
 v
-java:S1104#"TMake category a static final constant or non-public and provide accessors if needed.(ì÷¢Øùÿÿÿÿ8ÈæÖâÓ1
-m	java:S116"QRename this field "LOGGER" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ûğ‰è8ÎæÖâÓ1
-s	java:S116"XRename this field "KEYSPACE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(í‹Êa8ÎæÖâÓ1
-v	java:S116"URename this field "TABLE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Àøßäıÿÿÿÿ8ÎæÖâÓ1
-r	java:S116"VRename this field "TABLE_NAME2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á˜¼ô8ÎæÖâÓ1
+java:S1104#"TMake category a static final constant or non-public and provide accessors if needed.(ì÷¢Øùÿÿÿÿ8€ìÑ´Ô1
+m	java:S116"QRename this field "LOGGER" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ûğ‰è8”ìÑ´Ô1
+s	java:S116"XRename this field "KEYSPACE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(í‹Êa8”ìÑ´Ô1
+v	java:S116"URename this field "TABLE_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Àøßäıÿÿÿÿ8”ìÑ´Ô1
+r	java:S116"VRename this field "TABLE_NAME2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á˜¼ô8”ìÑ´Ô1
 =
-java:S1170"!Make this final field static too.(í‹Êa8ÏæÖâÓ1
+java:S1170"!Make this final field static too.(í‹Êa8•ìÑ´Ô1
 C
-java:S1170"!Make this final field static too.(Àøßäıÿÿÿÿ8ÏæÖâÓ1
+java:S1170"!Make this final field static too.(Àøßäıÿÿÿÿ8–ìÑ´Ô1
 >
-java:S1170"!Make this final field static too.(Á˜¼ô8ÏæÖâÓ1
+java:S1170"!Make this final field static too.(Á˜¼ô8–ìÑ´Ô1
 :
-java:S2119+"Save and re-use this "Random".(¼İÅf8ÓæÖâÓ1
+java:S2119+"Save and re-use this "Random".(¼İÅf8ìÑ´Ô1
 Y
-java:S1117y"<Rename "category" which hides the field declared at line 35.(ìÛ€è8åæÖâÓ1
+java:S1117y"<Rename "category" which hides the field declared at line 35.(ìÛ€è8¹ìÑ´Ô1
