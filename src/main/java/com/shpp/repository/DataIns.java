@@ -7,9 +7,12 @@ import com.datastax.oss.driver.api.core.DriverTimeoutException;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.servererrors.WriteFailureException;
+import com.datastax.oss.driver.api.core.servererrors.WriteTimeoutException;
 import com.shpp.dto.CategoryDto;
 import com.shpp.dto.ProductDto;
 import com.shpp.dto.StoreDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 
 public class DataIns {
-
+    private final Logger LOGGER = LoggerFactory.getLogger(DataIns.class);
     private final CqlSession session;
     private final String keyspaceName;
     private final String storeProductTable;
@@ -25,7 +28,9 @@ public class DataIns {
     private String categoryTable;
     private String storeTable;
     private String productTable;
-
+    int maxRetries = 3;
+    long initialDelayMillis = 1000;
+    long maxDelayMillis = 30000;
     DataGenerator dataGenerator = new DataGenerator();
 
 
@@ -48,9 +53,7 @@ public class DataIns {
                 keyspaceName, totalProductTable);
         PreparedStatement preparedStatement = session.prepare(insertQuery);
         PreparedStatement preparedStatementUpdate = session.prepare(updateTotalQuery);
-        int maxRetries = 3;
-        long initialDelayMillis = 1000; // 1 second
-        long maxDelayMillis = 30000; // 30 seconds
+
         List<StoreDto> failedStores = new ArrayList<>();
         List<ProductDto> failedProducts = new ArrayList<>();
 
@@ -62,9 +65,7 @@ public class DataIns {
                 forkJoinPool.submit(() ->
                         finalStoreData.parallelStream().forEach(storeDto ->
                                 finalProductData.parallelStream().forEach(productDto -> {
-                                    //CategoryDto randomCategory = getRandomElement(categoryData);
                                     int quantity = new Random().nextInt(100);
-
                                     try {
                                         session.execute(preparedStatement.bind()
                                                 .setUuid("category_id", productDto.getCategoryId())
@@ -78,7 +79,7 @@ public class DataIns {
                                                 .setUuid("category_id", productDto.getCategoryId())
                                                 .setUuid("store_id", storeDto.getStoreId())
                                                 .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-                                    } catch (DriverTimeoutException | WriteFailureException ex) {
+                                    } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                                         failedStores.add(storeDto);
                                         failedProducts.add(productDto);
                                     }
@@ -88,19 +89,19 @@ public class DataIns {
                 forkJoinPool.shutdown();
 
                 if (failedStores.isEmpty()) {
-                    break; // No failed insertions, break out of the retry loop
+                    break;
                 } else {
                     System.err.println("Store_product. Retrying failed insertions on attempt " + attempt);
-                    storeData = new ArrayList<>(failedStores); // Retry only the failed insertions
-                    productData = new ArrayList<>(failedProducts); // Retry only the failed insertions
-                    failedStores.clear(); // Clear the list for the next attempt
-                    failedProducts.clear(); // Clear the list for the next attempt
+                    storeData = new ArrayList<>(failedStores);
+                    productData = new ArrayList<>(failedProducts);
+                    failedStores.clear();
+                    failedProducts.clear();
                 }
-            } catch (DriverTimeoutException | WriteFailureException ex) {
+            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                 System.err.println("Store_product. Query timed out on attempt " + attempt);
                 if (attempt == maxRetries) {
                     System.err.println("Store_product. Max retries reached. Exiting.");
-                    throw ex; // Throw the exception if max retries are reached
+                    throw ex;
                 }
                 long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
                 try {
@@ -177,9 +178,6 @@ public class DataIns {
     }
 
     public void insertCategoryDataWithTry(CqlSession session, List<CategoryDto> categoryData) {
-        int maxRetries = 3;
-        long initialDelayMillis = 1000; // 1 second
-        long maxDelayMillis = 30000; // 30 seconds
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (category_id, category_name) VALUES (?, ?)",
                 keyspaceName, categoryTable);
@@ -192,17 +190,17 @@ public class DataIns {
                         dto.getCategoryName()
                 ).setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM)));
                 if (failedInsertions.isEmpty()) {
-                    break; // No failed insertions, break out of the retry loop
+                    break;
                 } else {
                     System.err.println("Category. Retrying failed insertions on attempt " + attempt);
-                    categoryData = new ArrayList<>(failedInsertions); // Retry only the failed insertions
-                    failedInsertions.clear(); // Clear the list for the next attempt
+                    categoryData = new ArrayList<>(failedInsertions);
+                    failedInsertions.clear();
                 }
-            } catch (DriverTimeoutException ex) {
+            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                 System.err.println("Category. Query timed out on attempt " + attempt);
                 if (attempt == maxRetries) {
                     System.err.println("Category. Max retries reached. Exiting.");
-                    throw ex; // Throw the exception if max retries are reached
+                    throw ex;
                 }
                 long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
                 try {
@@ -215,9 +213,7 @@ public class DataIns {
     }
 
     public void insertStoreDataWithTry(CqlSession session, List<StoreDto> storeData) {
-        int maxRetries = 3;
-        long initialDelayMillis = 1000; // 1 second
-        long maxDelayMillis = 30000; // 30 seconds
+
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (store_id, store_address) VALUES (?, ?)",
                 keyspaceName, storeTable);
@@ -230,17 +226,17 @@ public class DataIns {
                         dto.getLocation()
                 ).setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM)));
                 if (failedInsertions.isEmpty()) {
-                    break; // No failed insertions, break out of the retry loop
+                    break;
                 } else {
                     System.err.println("Store. Retrying failed insertions on attempt " + attempt);
-                    storeData = new ArrayList<>(failedInsertions); // Retry only the failed insertions
-                    failedInsertions.clear(); // Clear the list for the next attempt
+                    storeData = new ArrayList<>(failedInsertions);
+                    failedInsertions.clear();
                 }
-            } catch (DriverTimeoutException ex) {
+            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                 System.err.println("Store. Query timed out on attempt " + attempt);
                 if (attempt == maxRetries) {
                     System.err.println("Store. Max retries reached. Exiting.");
-                    throw ex; // Throw the exception if max retries are reached
+                    throw ex;
                 }
                 long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
                 try {
@@ -253,14 +249,11 @@ public class DataIns {
     }
 
     public void insertProductDataWithTry(CqlSession session, List<ProductDto> productData) {
-        int maxRetries = 3;
-        long initialDelayMillis = 1000; // 1 second
-        long maxDelayMillis = 30000; // 30 seconds
+
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (product_id, product_name) VALUES (?, ?)",
                 keyspaceName, productTable);
         PreparedStatement preparedStatement = session.prepare(insertQuery);
-
         List<ProductDto> failedInsertions = new ArrayList<>();
 
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
@@ -274,7 +267,7 @@ public class DataIns {
                                         dto.getProductId(),
                                         dto.getName()
                                 ).setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
-                            } catch (DriverTimeoutException ex) {
+                            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                                 failedInsertions.add(dto);
                             }
                         })
@@ -282,17 +275,17 @@ public class DataIns {
                 forkJoinPool.shutdown();
 
                 if (failedInsertions.isEmpty()) {
-                    break; // No failed insertions, break out of the retry loop
+                    break;
                 } else {
-                    System.err.println("Product. Retrying failed insertions on attempt " + attempt);
-                    productData = new ArrayList<>(failedInsertions); // Retry only the failed insertions
-                    failedInsertions.clear(); // Clear the list for the next attempt
+                    LOGGER.warn("Product. Retrying failed insertions on attempt " + attempt);
+                    productData = new ArrayList<>(failedInsertions);
+                    failedInsertions.clear();
                 }
-            } catch (DriverTimeoutException ex) {
-                System.err.println("Product. Query timed out on attempt " + attempt);
+            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
+                LOGGER.error("Product. Query timed out on attempt " + attempt, ex);
                 if (attempt == maxRetries) {
                     System.err.println("Product. Max retries reached. Exiting.");
-                    throw ex; // Throw the exception if max retries are reached
+                    throw ex;
                 }
                 long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
                 try {
