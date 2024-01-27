@@ -67,7 +67,7 @@ public class AmazonKeyspacesApp {
         stopWatch.reset();
         stopWatch.start();
         DataGenerator dataGenerator = new DataGenerator();
-        int totalProducts = 10000;
+        int totalProducts = 5000;
         int totalCategories = 1000;
         int totalStores = 75;
         List<CategoryDto> categoryData = dataGenerator.generateCategoryData(totalCategories);
@@ -78,9 +78,12 @@ public class AmazonKeyspacesApp {
             ins.insertCategoryDataWithTry(session, categoryData);
             ins.insertProductDataWithTry(session,productData);
 
-            ins.insertStoreProductDataParallelWithTry(storeData, productData, categoryData);
+            ins.insertStoreProductDataParallelWithTryNew(storeData, productData, categoryData);
         } catch (Exception e) {
             LOGGER.error("Error insert" , e);
+            stopWatch.stop();
+            LOGGER.info(">>>Data generation completed");
+            LOGGER.info(">>>Generation and insertion time: " + stopWatch.getTime() + " ms");
             System.exit(1);
         }
 

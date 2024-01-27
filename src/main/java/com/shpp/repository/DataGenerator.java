@@ -44,10 +44,11 @@ public class DataGenerator {
     }
 
     public List<ProductDto> generateProductData(int totalProducts, List<CategoryDto> categoryDtos) {
+        Random random = new Random();
         return IntStream.range(0, totalProducts)
                 .mapToObj(product -> {
                     UUID productId = UUID.randomUUID();
-                    UUID categoryId = categoryDtos.get(new Random().nextInt(categoryDtos.size())).getCategoryId();
+                    UUID categoryId = categoryDtos.get(random.nextInt(categoryDtos.size())).getCategoryId();
                     String productName = String.valueOf(faker.commerce().productName());
                     ProductDto productDto = new ProductDto(productId, productName, categoryId);
                     Set<ConstraintViolation<ProductDto>> violations = validatorClass.validateDTO(productDto);

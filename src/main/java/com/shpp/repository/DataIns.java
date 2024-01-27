@@ -43,8 +43,71 @@ public class DataIns {
         this.storeTable = storeTable;
         this.categoryTable = categoryTable;
     }
+    public void insertStoreProductDataParallelWithTryNew(List<StoreDto> storeData, List<ProductDto> productData, List<CategoryDto> categoryData) throws Exception {
+        String insertQuery = String.format(
+                "INSERT INTO %s.%s (category_id, store_id, product_id, quantity) VALUES (?, ?, ?, ?)",
+                keyspaceName, storeProductTable);
+        String updateTotalQuery = String.format(
+                "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_id = ? AND store_id = ?",
+                keyspaceName, totalProductTable);
+        PreparedStatement preparedStatement = session.prepare(insertQuery);
+        PreparedStatement preparedStatementUpdate = session.prepare(updateTotalQuery);
 
-    public void insertStoreProductDataParallelWithTry(List<StoreDto> storeData, List<ProductDto> productData, List<CategoryDto> categoryData) {
+        List<StoreDto> failedStores = new ArrayList<>();
+        List<ProductDto> failedProducts = new ArrayList<>();
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+                List<StoreDto> finalStoreData = storeData;
+                List<ProductDto> finalProductData = productData;
+                forkJoinPool.submit(() -> processStoreProductData(finalStoreData, finalProductData, preparedStatement, preparedStatementUpdate, failedStores, failedProducts)).invoke();
+                forkJoinPool.shutdown();
+
+                // Check if there are no failed insertions
+                if (failedStores.isEmpty()) {
+                    break;
+                } else {
+                    System.err.println("Store_product. Retrying failed insertions on attempt " + attempt);
+                    storeData = new ArrayList<>(failedStores);
+                    productData = new ArrayList<>(failedProducts);
+                    failedStores.clear();
+                    failedProducts.clear();
+                }
+            } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
+                handleRetry(attempt, maxRetries, initialDelayMillis, maxDelayMillis, ex);
+            }
+        }
+    }
+
+    // Method to process store-product data in parallel
+    public void processStoreProductData(List<StoreDto> storeData, List<ProductDto> productData,
+                                         PreparedStatement preparedStatement, PreparedStatement preparedStatementUpdate,
+                                         List<StoreDto> failedStores, List<ProductDto> failedProducts) {
+        storeData.parallelStream().forEach(storeDto ->
+                productData.parallelStream().forEach(productDto -> {
+                    int quantity = new Random().nextInt(100);
+                    try {
+                        session.execute(preparedStatement.bind()
+                                .setUuid("category_id", productDto.getCategoryId())
+                                .setUuid("store_id", storeDto.getStoreId())
+                                .setUuid("product_id", productDto.getProductId())
+                                .setInt("quantity", quantity)
+                                .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+
+                        session.execute(preparedStatementUpdate.bind()
+                                .setLong("total_quantity", quantity)
+                                .setUuid("category_id", productDto.getCategoryId())
+                                .setUuid("store_id", storeDto.getStoreId())
+                                .setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
+                    } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
+                        failedStores.add(storeDto);
+                        failedProducts.add(productDto);
+                    }
+                }));
+    }
+
+    public void insertStoreProductDataParallelWithTry(List<StoreDto> storeData, List<ProductDto> productData, List<CategoryDto> categoryData) throws Exception {
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (category_id, store_id, product_id, quantity) VALUES (?, ?, ?, ?)",
                 keyspaceName, storeProductTable);
@@ -98,17 +161,7 @@ public class DataIns {
                     failedProducts.clear();
                 }
             } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
-                System.err.println("Store_product. Query timed out on attempt " + attempt);
-                if (attempt == maxRetries) {
-                    System.err.println("Store_product. Max retries reached. Exiting.");
-                    throw ex;
-                }
-                long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
-                try {
-                    Thread.sleep(delayMillis); // Apply exponential backoff
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                handleRetry(attempt, maxRetries, initialDelayMillis, maxDelayMillis, ex);
             }
         }
     }
@@ -177,7 +230,7 @@ public class DataIns {
         }));
     }
 
-    public void insertCategoryDataWithTry(CqlSession session, List<CategoryDto> categoryData) {
+    public void insertCategoryDataWithTry(CqlSession session, List<CategoryDto> categoryData) throws Exception {
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (category_id, category_name) VALUES (?, ?)",
                 keyspaceName, categoryTable);
@@ -197,22 +250,24 @@ public class DataIns {
                     failedInsertions.clear();
                 }
             } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
-                System.err.println("Category. Query timed out on attempt " + attempt);
-                if (attempt == maxRetries) {
-                    System.err.println("Category. Max retries reached. Exiting.");
-                    throw ex;
-                }
-                long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
-                try {
-                    Thread.sleep(delayMillis); // Apply exponential backoff
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+               handleRetry(attempt, maxRetries, initialDelayMillis, maxDelayMillis, ex);
             }
         }
     }
-
-    public void insertStoreDataWithTry(CqlSession session, List<StoreDto> storeData) {
+    public void handleRetry(int attempt, int maxRetries, long initialDelayMillis, long maxDelayMillis, Exception ex) throws Exception {
+        System.err.println("Query timed out on attempt " + attempt);
+        if (attempt == maxRetries) {
+            System.err.println("Max retries reached. Exiting.");
+            throw ex;
+        }
+        long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
+        try {
+            Thread.sleep(delayMillis); // Apply exponential backoff
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    public void insertStoreDataWithTry(CqlSession session, List<StoreDto> storeData) throws Exception {
 
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (store_id, store_address) VALUES (?, ?)",
@@ -233,22 +288,12 @@ public class DataIns {
                     failedInsertions.clear();
                 }
             } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
-                System.err.println("Store. Query timed out on attempt " + attempt);
-                if (attempt == maxRetries) {
-                    System.err.println("Store. Max retries reached. Exiting.");
-                    throw ex;
-                }
-                long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
-                try {
-                    Thread.sleep(delayMillis); // Apply exponential backoff
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                handleRetry(attempt, maxRetries, initialDelayMillis, maxDelayMillis, ex);
             }
         }
     }
 
-    public void insertProductDataWithTry(CqlSession session, List<ProductDto> productData) {
+    public void insertProductDataWithTry(CqlSession session, List<ProductDto> productData) throws Exception {
 
         String insertQuery = String.format(
                 "INSERT INTO %s.%s (product_id, product_name) VALUES (?, ?)",
@@ -282,17 +327,7 @@ public class DataIns {
                     failedInsertions.clear();
                 }
             } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
-                LOGGER.error("Product. Query timed out on attempt " + attempt, ex);
-                if (attempt == maxRetries) {
-                    System.err.println("Product. Max retries reached. Exiting.");
-                    throw ex;
-                }
-                long delayMillis = Math.min(initialDelayMillis * (1 << attempt), maxDelayMillis);
-                try {
-                    Thread.sleep(delayMillis); // Apply exponential backoff
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                handleRetry(attempt, maxRetries, initialDelayMillis, maxDelayMillis, ex);
             }
         }
     }
