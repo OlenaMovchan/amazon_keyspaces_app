@@ -3,6 +3,7 @@ package com.shpp.repository;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +13,9 @@ public class DataSelection {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DataSelection.class);
     private final String KEYSPACE_NAME = "my_keyspace";
-    private final String TABLE_NAME = "store_product_table_";
-    private static String categoryTable = "category_table";
-    private static String storeTable = "store_table";
-    private final String totalProductsByStore = "total_products_by_store_";
+    private String categoryTable = "category_table";
+    private String storeTable = "store_table";
+    private String totalProductsByStore = "total_products_by_store_";
     static CqlSession session;
 
     public DataSelection(CqlSession session) {
@@ -28,59 +28,63 @@ public class DataSelection {
                 LOGGER.error("CqlSession is null. Cannot execute query.");
                 return;
             }
-            String select = String.format(
-                    "SELECT * FROM \"%s\".\"%s\" ;",//WHERE category_name = '" + category + "'ALLOW FILTERING
-                    KEYSPACE_NAME, categoryTable);
-            ResultSet resultSet1 = session.execute(select);
-           UUID category_id;
-           String categoryName = "";
-           UUID target = null;
-            for (Row row: resultSet1) {
-                category_id = row.getUuid("category_id");
-                categoryName = row.getString("category_name");
-                if (categoryName.equals(category)) {
-                    target = category_id;
-                    LOGGER.info("Target  " + target);
-                }
-                //LOGGER.info("UUID   " + category_id);
-                //LOGGER.info("Category  " + categoryName);
-            }
-            if (target.equals(null)) {
+
+            UUID categoryId = findCategoryIdByName(category);
+
+            Pair<UUID, Long> storeData = findLargestQuantityAndStoreId(categoryId);
+
+            if (storeData == null) {
                 LOGGER.info("There is no such category in the database: {}", category);
-            }//32e6c81d-fc29-4c29-bf40-a20751f1bb1f
-            String selectDataQuery = String.format(
-                    "SELECT * FROM \"%s\".\"%s\" WHERE category_id = ?;",
-                    KEYSPACE_NAME, totalProductsByStore);
-
-            ResultSet resultSet = session.execute(selectDataQuery, target);
-
-            UUID storeId = null;
-
-            long largestAmount = 0;
-            for (Row row : resultSet) {
-                Long totalQuantity = row.getLong("total_quantity");
-                if (totalQuantity > largestAmount) {
-                    largestAmount = totalQuantity;
-                    storeId = row.getUuid("store_id");
-
-                }
+                return;
             }
-            String select3 = String.format(
-                    "SELECT * FROM \"%s\".\"%s\" WHERE store_id = ?;",
-                    KEYSPACE_NAME, storeTable);
 
-            ResultSet resultSet2 = session.execute(select3, storeId);
-            String address = "";
-            for (Row row: resultSet2) {
-                LOGGER.info("Address   " +row.getString("store_address"));
-                if (storeId.equals(row.getUuid("store_id"))){
-                    address = row.getString("store_address");
-                }
-            }
+            String address = findAddressByStoreId(storeData.getLeft());
+
             LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
-                    category, address, largestAmount);
+                    category, address, storeData.getRight());
         } catch (Exception e) {
             LOGGER.error("Error selecting data: {}", e);
         }
     }
+
+    public UUID findCategoryIdByName(String categoryName) {
+        String selectQuery = String.format(
+                "SELECT category_id FROM \"%s\".\"%s\" WHERE category_name = ? ALLOW FILTERING;",
+                KEYSPACE_NAME, categoryTable);
+
+        ResultSet resultSet = session.execute(selectQuery, categoryName);
+        Row row = resultSet.one();
+        return (row != null) ? row.getUuid("category_id") : null;
+    }
+
+    public Pair<UUID, Long> findLargestQuantityAndStoreId(UUID categoryId) {
+        String selectQuery = String.format(
+                "SELECT * FROM \"%s\".\"%s\" WHERE category_id = ?;",
+                KEYSPACE_NAME, totalProductsByStore);
+
+        ResultSet resultSet = session.execute(selectQuery, categoryId);
+
+        UUID storeId = null;
+        long largestAmount = 0;
+
+        for (Row row : resultSet) {
+            Long totalQuantity = row.getLong("total_quantity");
+            if (totalQuantity > largestAmount) {
+                largestAmount = totalQuantity;
+                storeId = row.getUuid("store_id");
+            }
+        }
+        return (storeId != null) ? Pair.of(storeId, largestAmount) : null;
+    }
+
+    public String findAddressByStoreId(UUID storeId) {
+        String selectQuery = String.format(
+                "SELECT store_address FROM \"%s\".\"%s\" WHERE store_id = ?;",
+                KEYSPACE_NAME, storeTable);
+
+        ResultSet resultSet = session.execute(selectQuery, storeId);
+        Row row = resultSet.one();
+        return (row != null) ? row.getString("store_address") : null;
+    }
+
 }

@@ -26,7 +26,7 @@ public class Connector {
             LOGGER.info("Consistency level: " + consistencyLevel);
 
         } catch (Exception e) {
-            LOGGER.error("Error connecting to Cassandra: {}", e.getMessage());
+            LOGGER.error("Error connecting to AmazonKeyspaces: {}", e.getMessage());
         }
     }
 

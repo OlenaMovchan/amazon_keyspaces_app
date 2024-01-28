@@ -1,7 +1,5 @@
 package com.shpp.repository;
 
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.utils.UUIDs;
 import com.github.javafaker.Faker;
 import com.shpp.ValidatorClass;
 import com.shpp.dto.CategoryDto;

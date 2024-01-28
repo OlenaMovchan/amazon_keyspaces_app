@@ -37,3 +37,7 @@ d
 .src/main/java/com/shpp/repository/DataIns.java,c\a\cae02c063b893c36bd366c489718d89679012ec1
 W
 'src/test/java/com/shpp/DataInsTest.java,e\9\e9322f64d6d27c662575f91aba8facc88f668731
+T
+$src/test/java/com/shpp/DataIns2.java,e\a\ea191620806e5677f9cd064cafcf8f9feed4beda
+X
+(src/test/java/com/shpp/DataIns2Test.java,8\8\88242ee865d378ee7412215fc2a711f9bd238d9d

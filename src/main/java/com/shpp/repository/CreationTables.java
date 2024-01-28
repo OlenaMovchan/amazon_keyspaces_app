@@ -68,23 +68,3 @@ public class CreationTables {
         }
     }
 }
-
-
-//    String createTableQuery = String.format(
-//                    "CREATE TABLE IF NOT EXISTS %s.%s ("
-//                            + "category_name TEXT, "
-//                            + "store_address TEXT, "
-//                            + "product_id UUID, "
-//                            + "quantity INT, "
-//                            + "PRIMARY KEY ((category_name), store_address, product_id))",
-//                    KEYSPACE_NAME, storeProductTable);
-//            session.execute(createTableQuery);
-//
-//            String createTableQuery2 = String.format(
-//                    "CREATE TABLE IF NOT EXISTS %s.%s ("
-//                            + "category_name TEXT, "
-//                            + "store_address TEXT, "
-//                            + "total_quantity INT, "
-//                            + "PRIMARY KEY (category_name, store_address))",
-//                    KEYSPACE_NAME, totalProductsByStore);
-//            session.execute(createTableQuery2);
