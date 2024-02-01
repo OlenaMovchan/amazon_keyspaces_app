@@ -25,7 +25,7 @@ public class CreationTables {
                             + "store_id UUID, "
                             + "product_id UUID, "
                             + "quantity INT, "
-                            + "PRIMARY KEY (category_id))",
+                            + "PRIMARY KEY (store_id))",
                     KEYSPACE_NAME, storeProductTable);
             session.execute(createTableQuery);
 
