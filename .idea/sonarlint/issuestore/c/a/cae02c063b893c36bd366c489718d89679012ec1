@@ -1,15 +1,0 @@
-
-U
-java:S1172*"3Remove this unused method parameter "categoryData".(±ñª–úÿÿÿÿ8¼ÜÇ´Ô1
-@
-java:S2119B"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8ÄÜÇ´Ô1
-A
-java:S2119‚"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8ÉÜÇ´Ô1
-A
-java:S2119£"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8ÌÜÇ´Ô1
-A
-java:S2119ê"Save and re-use this "Random".(šŸ«íøÿÿÿÿ8ØÜÇ´Ô1
-Z
-java:S1128"=Remove this unused import 'com.datastax.driver.core.Session'.(¡ä‰Å8İş²¹Ô1
-m
-java:S1128"PRemove this unused import 'com.datastax.oss.driver.api.core.cql.BoundStatement'.(ö®è¶8İş²¹Ô1

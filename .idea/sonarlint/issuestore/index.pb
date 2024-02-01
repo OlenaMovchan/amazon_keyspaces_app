@@ -33,7 +33,5 @@ d
 4src/main/java/com/shpp/repository/DataInsertion.java,6\a\6a5919678d920d97fb1f56b7dc27788cb515b2c1
 d
 4src/main/java/com/shpp/repository/DataSelection.java,e\0\e0925a6f257b1693808a2034424500371c7b643d
-^
-.src/main/java/com/shpp/repository/DataIns.java,c\a\cae02c063b893c36bd366c489718d89679012ec1
-W
-'src/test/java/com/shpp/DataInsTest.java,e\9\e9322f64d6d27c662575f91aba8facc88f668731
+]
+-src/test/java/com/shpp/DataGeneratorTest.java,8\4\846b56f28804205a2df600f7ab33526400aa0eee

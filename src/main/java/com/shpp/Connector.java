@@ -8,8 +8,8 @@ import java.net.InetSocketAddress;
 
 public class Connector {
     private CqlSession session;
-    private String username = "cassandra-at-840190877311";
-    private String password = "WrbhdTLS2I2SYZpib1bfe3HGrL6jM8KMCxjC0IRH2lE=";
+    private String username = "";
+    private String password = "";
     public static final Logger LOGGER = LoggerFactory.getLogger(Connector.class);
 
     public void connect(String host, int port) {
@@ -26,7 +26,7 @@ public class Connector {
             LOGGER.info("Consistency level: " + consistencyLevel);
 
         } catch (Exception e) {
-            LOGGER.error("Error connecting to Cassandra: {}", e.getMessage());
+            LOGGER.error("Error connecting to AmazonKeyspaces: {}", e.getMessage());
         }
     }
 

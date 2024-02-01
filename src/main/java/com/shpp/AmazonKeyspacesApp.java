@@ -22,8 +22,6 @@ public class AmazonKeyspacesApp {
     private static String categoryTable = "category_table";
     private static String storeTable = "store_table";
     private static String productTable = "product_table";
-// 3 норм форма, модель даних багато повторів, тип текст --по ключикам, COUNTER ---INT
-    //UUID для noSql немає транзакцій
 
     //thread - 1:
     //Amount of data: 750_000
@@ -36,19 +34,25 @@ public class AmazonKeyspacesApp {
     //Generation and insertion time: 27608 ms
     //insertion speed: 3622 inserts/s
 
+    //if several attempts of inserts
+
+    //thread - 2: (available processors)
+    //Amount of data: 455_000
+    //Generation and insertion time: 1642300 ms
+    //insertion speed: 277 inserts/s
+
     public static void main(String[] args) {
         new AmazonKeyspacesApp().run();
     }
 
     public static void run() {
-        //DataInsertion repository = new DataInsertion();
 
         Connector connector = new Connector();
         connector.connect(contactPoint, port);
         CqlSession session = connector.getSession();
 
         CreationTables creationTables = new CreationTables();
-        DataIns ins = new DataIns(session,KEYSPACE_NAME, STORE_PRODUCT_TABLE, TOTAL_PRODUCTS_BY_STORE, productTable, storeTable, categoryTable);
+        DataInsertion ins = new DataInsertion(session);
         DataSelection dataSelection = new DataSelection(session);
 
         StopWatch stopWatch = new StopWatch();
@@ -61,32 +65,30 @@ public class AmazonKeyspacesApp {
         waitForTableCreation(session, storeTable);
         waitForTableCreation(session, productTable);
         waitForTableCreation(session, categoryTable);
+
         stopWatch.stop();
         LOGGER.info("Tables created successfully");
 
         stopWatch.reset();
         stopWatch.start();
         DataGenerator dataGenerator = new DataGenerator();
-        int totalProducts = 5000;
-        int totalCategories = 1000;
-        int totalStores = 75;
+        int totalProducts = 10;
+        int totalCategories = 5;
+        int totalStores = 5;
+
         List<CategoryDto> categoryData = dataGenerator.generateCategoryData(totalCategories);
         List<StoreDto> storeData = dataGenerator.generateStoreData(totalStores);
         List<ProductDto> productData = dataGenerator.generateProductData(totalProducts, categoryData);
-        try {
-            ins.insertStoreDataWithTry(session, storeData);
-            ins.insertCategoryDataWithTry(session, categoryData);
-            ins.insertProductDataWithTry(session,productData);
 
-            ins.insertStoreProductDataParallelWithTryNew(storeData, productData, categoryData);
+        try {
+            ins.insertStoreData(session, storeData, KEYSPACE_NAME, storeTable);
+            ins.insertCategoryData(session, categoryData, KEYSPACE_NAME, categoryTable);
+            ins.insertProductData(session, productData, KEYSPACE_NAME, productTable);
+            ins.insertStoreProductData(storeData, productData, KEYSPACE_NAME, STORE_PRODUCT_TABLE, TOTAL_PRODUCTS_BY_STORE);
         } catch (Exception e) {
-            LOGGER.error("Error insert" , e);
-            stopWatch.stop();
-            LOGGER.info(">>>Data generation completed");
-            LOGGER.info(">>>Generation and insertion time: " + stopWatch.getTime() + " ms");
+            LOGGER.error("Error insert", e);
             System.exit(1);
         }
-
 
         stopWatch.stop();
         LOGGER.info("Data generation completed");
@@ -95,7 +97,7 @@ public class AmazonKeyspacesApp {
         stopWatch.reset();
         stopWatch.start();
 
-        String category = System.getProperty("categoryName", "Дім");
+        String category = System.getProperty("category", "Дім");
         dataSelection.selectData(category);
 
         stopWatch.stop();

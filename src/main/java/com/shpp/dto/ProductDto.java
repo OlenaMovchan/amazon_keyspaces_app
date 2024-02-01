@@ -1,10 +1,15 @@
 package com.shpp.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 
 public class ProductDto {
 
     private UUID productId;
+    @NotNull
+    @NotBlank
     private String name;
     private UUID categoryId;
 
