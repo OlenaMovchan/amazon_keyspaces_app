@@ -43,7 +43,7 @@ public class DataSelection {
             LOGGER.info("Category_name: {}, Store_address: {}, Total_Quantity: {}",
                     category, address, storeData.getRight());
         } catch (Exception e) {
-            LOGGER.error("Error selecting data: {}", e);
+            LOGGER.error("Error selecting data", e);
         }
     }
 
@@ -68,7 +68,7 @@ public class DataSelection {
         long largestAmount = 0;
 
         for (Row row : resultSet) {
-            Long totalQuantity = row.getLong("total_quantity");
+            long totalQuantity = row.getLong("total_quantity");
             if (totalQuantity > largestAmount) {
                 largestAmount = totalQuantity;
                 storeId = row.getUuid("store_id");

@@ -21,11 +21,11 @@ public class CreationTables {
             }
             String createTableQuery = String.format(
                     "CREATE TABLE IF NOT EXISTS %s.%s ("
-                            + "category_id UUID, "
+                            //+ "category_id UUID, "
                             + "store_id UUID, "
                             + "product_id UUID, "
                             + "quantity INT, "
-                            + "PRIMARY KEY ((category_id), store_id, product_id))",
+                            + "PRIMARY KEY (category_id))",
                     KEYSPACE_NAME, storeProductTable);
             session.execute(createTableQuery);
 
@@ -34,7 +34,7 @@ public class CreationTables {
                             + "category_id UUID, "
                             + "store_id UUID, "
                             + "total_quantity COUNTER, "
-                            + "PRIMARY KEY (category_id, store_id))",
+                            + "PRIMARY KEY (category_id))",
                     KEYSPACE_NAME, totalProductsByStore);
             session.execute(createTableQuery2);
 
@@ -42,7 +42,7 @@ public class CreationTables {
                     "CREATE TABLE IF NOT EXISTS %s.%s ("
                             + "category_id UUID, "
                             + "category_name TEXT, "
-                            + "PRIMARY KEY ((category_id), category_name))",
+                            + "PRIMARY KEY (category_id))",
                     KEYSPACE_NAME, categoryTable);
             session.execute(createTableQuery3);
 
@@ -50,7 +50,7 @@ public class CreationTables {
                     "CREATE TABLE IF NOT EXISTS %s.%s ("
                             + "store_id UUID, "
                             + "store_address TEXT, "
-                            + "PRIMARY KEY ((store_id), store_address))",
+                            + "PRIMARY KEY (store_id))",
                     KEYSPACE_NAME, storeTable);
             session.execute(createTableQuery4);
 
@@ -58,7 +58,8 @@ public class CreationTables {
                     "CREATE TABLE IF NOT EXISTS %s.%s ("
                             + "product_id UUID, "
                             + "product_name TEXT, "
-                            + "PRIMARY KEY ((product_id), product_name))",
+                            + "category_id UUID, "
+                            + "PRIMARY KEY (product_id))",
                     KEYSPACE_NAME, productTable);
             session.execute(createTableQuery5);
 

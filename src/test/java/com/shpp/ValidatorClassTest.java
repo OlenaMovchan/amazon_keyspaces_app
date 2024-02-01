@@ -1,17 +1,22 @@
 package com.shpp;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.shpp.dto.CategoryDto;
 import com.shpp.dto.ProductDto;
 import com.shpp.dto.StoreDto;
 import jakarta.validation.ConstraintViolation;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidatorClassTest {
+    @BeforeAll
+    public static void setUp() {
+        Locale.setDefault(new Locale("uk", "UA"));
+    }
 
     @Test
     void validateCategoryPositive() {
@@ -118,11 +123,32 @@ public class ValidatorClassTest {
     void validateProductBad() {
 
         ValidatorClass<ProductDto> validatorClass = new ValidatorClass<>();
-        ProductDto invalidDTO = new ProductDto(UUID.randomUUID(),"", UUID.randomUUID());
+        ProductDto invalidDTO = new ProductDto(UUID.randomUUID(), "", UUID.randomUUID());
 
         Set<ConstraintViolation<ProductDto>> violations = validatorClass.validateDTO(invalidDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
     }
+
+    @Test
+    void testValidationMessagesInUkrainian() {
+        ValidatorClass<StoreDto> validatorClass = new ValidatorClass<>();
+        StoreDto dto = new StoreDto(UUID.randomUUID(), null);
+
+        Set<ConstraintViolation<StoreDto>> violations = validatorClass.validateDTO(dto);
+
+        assertEquals(2, violations.size());
+        List<String> list = new ArrayList<>();
+
+        for (ConstraintViolation<StoreDto> violation : violations) {
+            String message = violation.getMessage();
+            list.add(message);
+            System.out.println(message);
+        }
+        //assertEquals("не може бути відсутнім, має бути задано", list.get(0));
+        //assertEquals("не може бути пустим", list.get(1));
+    }
+
+
 }

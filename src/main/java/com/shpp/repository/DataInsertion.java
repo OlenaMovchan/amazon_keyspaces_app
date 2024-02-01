@@ -97,7 +97,7 @@ public class DataInsertion {
     public void insertProductData(CqlSession session, List<ProductDto> productData, String keyspaceName, String productTable) throws Exception {
 
         String insertQuery = String.format(
-                "INSERT INTO %s.%s (product_id, product_name) VALUES (?, ?)",
+                "INSERT INTO %s.%s (product_id, product_name, category_id) VALUES (?, ?, ?)",
                 keyspaceName, productTable);
         PreparedStatement preparedStatement = session.prepare(insertQuery);
         List<ProductDto> failedInsertions = new ArrayList<>();
@@ -111,7 +111,8 @@ public class DataInsertion {
                             try {
                                 session.execute(preparedStatement.bind(
                                         dto.getProductId(),
-                                        dto.getName()
+                                        dto.getName(),
+                                        dto.getCategoryId()
                                 ).setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM));
                             } catch (DriverTimeoutException | WriteFailureException | WriteTimeoutException ex) {
                                 failedInsertions.add(dto);
@@ -135,7 +136,7 @@ public class DataInsertion {
 
     public void insertStoreProductData(List<StoreDto> storeData, List<ProductDto> productData, String keyspaceName, String storeProductTable, String totalProductTable) throws Exception {
         String insertQuery = String.format(
-                "INSERT INTO %s.%s (category_id, store_id, product_id, quantity) VALUES (?, ?, ?, ?)",
+                "INSERT INTO %s.%s (store_id, product_id, quantity) VALUES (?, ?, ?)",//category_id,   ?,
                 keyspaceName, storeProductTable);
         String updateTotalQuery = String.format(
                 "UPDATE %s.%s SET total_quantity = total_quantity + ? WHERE category_id = ? AND store_id = ?",
@@ -148,7 +149,7 @@ public class DataInsertion {
 
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+                ForkJoinPool forkJoinPool = new ForkJoinPool(10);
                 List<StoreDto> finalStoreData = storeData;
                 List<ProductDto> finalProductData = productData;
                 forkJoinPool.submit(() -> processStoreProductData(finalStoreData, finalProductData, preparedStatement, preparedStatementUpdate, failedStores, failedProducts)).invoke();
@@ -177,7 +178,7 @@ public class DataInsertion {
                     int quantity = new Random().nextInt(100);
                     try {
                         session.execute(preparedStatement.bind()
-                                .setUuid("category_id", productDto.getCategoryId())
+                                //.setUuid("category_id", productDto.getCategoryId())
                                 .setUuid("store_id", storeDto.getStoreId())
                                 .setUuid("product_id", productDto.getProductId())
                                 .setInt("quantity", quantity)

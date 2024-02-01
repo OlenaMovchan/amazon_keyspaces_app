@@ -1,26 +1,0 @@
-
-r	java:S116"QRename this field "LOGGER" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ª€Ôûÿÿÿÿ8äÈæÔ1
-@
-java:S2119O"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8îÈæÔ1
-P
-java:S1172d"3Remove this unused method parameter "categoryData".(«âÍ8ğÈæÔ1
-@
-java:S2119y"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8ñÈæÔ1
-A
-java:S2119®"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8ôÈæÔ1
-A
-java:S2119Ï"Save and re-use this "Random".(²öÉšÿÿÿÿÿ8öÈæÔ1
-Š
-java:S1130"lRemove the declaration of thrown exception 'java.lang.Exception', as it cannot be thrown from method's body.(°’šÀ8úÈæÔ1
-T
-java:S1481¤"6Remove this unused "preparedStatement" local variable.(ÿÅ8úÈæÔ1
-[
-java:S1117ÿ">Rename "maxRetries" which hides the field declared at line 27.(¨™8ıÈæÔ1
-d
-java:S1117€"FRename "initialDelayMillis" which hides the field declared at line 28.(…Ğ¦Ÿ8ıÈæÔ1
-`
-java:S1117"BRename "maxDelayMillis" which hides the field declared at line 29.(×ƒ¡Ş8ıÈæÔ1
-A
-java:S2119µ"Save and re-use this "Random".(šŸ«íøÿÿÿÿ8ÿÈæÔ1
-Z
-java:S1128"=Remove this unused import 'com.datastax.driver.core.Session'.(¡ä‰Å8ÿÈæÔ1

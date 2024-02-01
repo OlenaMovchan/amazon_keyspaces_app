@@ -34,8 +34,10 @@ public class AmazonKeyspacesApp {
     //Generation and insertion time: 27608 ms
     //insertion speed: 3622 inserts/s
 
+    //if several attempts of inserts
+
     //thread - 2: (available processors)
-    // Amount of data: 455_000
+    //Amount of data: 455_000
     //Generation and insertion time: 1642300 ms
     //insertion speed: 277 inserts/s
 
@@ -63,15 +65,16 @@ public class AmazonKeyspacesApp {
         waitForTableCreation(session, storeTable);
         waitForTableCreation(session, productTable);
         waitForTableCreation(session, categoryTable);
+
         stopWatch.stop();
         LOGGER.info("Tables created successfully");
 
         stopWatch.reset();
         stopWatch.start();
         DataGenerator dataGenerator = new DataGenerator();
-        int totalProducts = 5000;
-        int totalCategories = 1000;
-        int totalStores = 75;
+        int totalProducts = 10;
+        int totalCategories = 5;
+        int totalStores = 5;
 
         List<CategoryDto> categoryData = dataGenerator.generateCategoryData(totalCategories);
         List<StoreDto> storeData = dataGenerator.generateStoreData(totalStores);
@@ -94,7 +97,7 @@ public class AmazonKeyspacesApp {
         stopWatch.reset();
         stopWatch.start();
 
-        String category = System.getProperty("categoryName", "Дім");
+        String category = System.getProperty("category", "Дім");
         dataSelection.selectData(category);
 
         stopWatch.stop();
